@@ -1,5 +1,6 @@
 import 'child_model.dart';
 import 'spouse_model.dart';
+import '../config/api_config.dart';
 
 class EmployeeModel {
   String company;
@@ -39,6 +40,48 @@ class EmployeeModel {
       'permanentAddress': permanentAddress,
       'education': education,
     };
+  }
+
+  // API format with PascalCase keys and flattened spouse data
+  Map<String, dynamic> toApiJson({
+    required String addedBy,
+    required String dateAdded,
+  }) {
+    final Map<String, dynamic> apiData = {
+      'EmployeeID': employeeId,
+      'Factory': ApiConfig.getFactoryCode(company),
+      'MaritalStatus': maritalStatus,
+      'Gender': gender,
+      'PresentAddress': presentAddress,
+      'PermanentAddress': permanentAddress,
+      'Education': education,
+      'IsMobileUser': true,
+      'AddedBy': addedBy,
+      'DateAdded': dateAdded,
+      'TotalNoofChildred': children.length,
+    };
+
+    // Add spouse information if married
+    if (spouse != null) {
+      apiData['SpouseName'] = spouse!.name;
+      apiData['SpouseOccupation'] = spouse!.occupation;
+      apiData['SpouseEducation'] = spouse!.education;
+      apiData['SpouseDOB'] = spouse!.formatDateForApi(spouse!.dateOfBirth);
+    } else {
+      apiData['SpouseName'] = '';
+      apiData['SpouseOccupation'] = '';
+      apiData['SpouseEducation'] = '';
+      apiData['SpouseDOB'] = '';
+    }
+
+    // Add children information
+    if (children.isNotEmpty) {
+      apiData['Childs'] = children.map((child) => child.toApiJson()).toList();
+    } else {
+      apiData['Childs'] = [];
+    }
+
+    return apiData;
   }
 
   factory EmployeeModel.fromJson(Map<String, dynamic> json) {

@@ -3,8 +3,13 @@ import 'package:get/get.dart';
 import '../models/employee_model.dart';
 import '../models/spouse_model.dart';
 import '../models/child_model.dart';
+import '../services/api_service.dart';
+import '../services/session_service.dart';
+import '../config/api_config.dart';
 
 class EmployeeController extends GetxController {
+  final ApiService _apiService = ApiService();
+  final SessionService _sessionService = SessionService();
   final formKey = GlobalKey<FormState>();
 
   // Companies
@@ -14,6 +19,7 @@ class EmployeeController extends GetxController {
   // Employee basic info
   final employeeIdController = TextEditingController();
   final employeeNameController = TextEditingController();
+  final employeeIdFocusNode = FocusNode();
 
   // Marital status
   final maritalStatuses = ['Married', 'Unmarried', 'Divorced', 'Widow','Separated'];
@@ -42,6 +48,9 @@ class EmployeeController extends GetxController {
   // Saved employees list
   final RxList<EmployeeModel> savedEmployees = <EmployeeModel>[].obs;
 
+  // Loading state
+  final isLoading = false.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -60,6 +69,17 @@ class EmployeeController extends GetxController {
         numberOfChildren.value = 0;
       }
     });
+
+    // Listen to employee ID focus changes
+    employeeIdFocusNode.addListener(() {
+      if (!employeeIdFocusNode.hasFocus) {
+        // When focus is lost, fetch employee name if ID is not empty
+        final employeeId = employeeIdController.text.trim();
+        if (employeeId.isNotEmpty && selectedCompany.value.isNotEmpty) {
+          fetchEmployeeName(employeeId);
+        }
+      }
+    });
   }
 
   @override
@@ -71,6 +91,7 @@ class EmployeeController extends GetxController {
   void disposeControllers() {
     employeeIdController.dispose();
     employeeNameController.dispose();
+    employeeIdFocusNode.dispose();
     spouseNameController.dispose();
     spouseOccupationController.dispose();
     spouseDobController.dispose();
@@ -84,23 +105,42 @@ class EmployeeController extends GetxController {
     }
   }
 
-  // Mock function to fetch employee name by ID
+  // Fetch employee name by ID using API
   Future<void> fetchEmployeeName(String employeeId) async {
     if (employeeId.isEmpty || selectedCompany.value.isEmpty) return;
 
-    // Simulate API call
-    await Future.delayed(const Duration(milliseconds: 500));
+    try {
+      // Get factory code from selected company
+      final factoryCode = ApiConfig.getFactoryCode(selectedCompany.value);
 
-    // Mock data - replace with actual API call later
-    final mockNames = {
-      '001': 'John Doe',
-      '002': 'Jane Smith',
-      '003': 'Michael Johnson',
-      '004': 'Sarah Williams',
-      '005': 'David Brown',
-    };
+      // Call API to get employee name
+      final employeeName = await _apiService.getEmployee(
+        employeeId: employeeId,
+        factory: factoryCode,
+      );
 
-    employeeNameController.text = mockNames[employeeId] ?? 'Employee $employeeId';
+      if (employeeName != null && employeeName.isNotEmpty) {
+        employeeNameController.text = employeeName;
+      } else {
+        employeeNameController.text = '';
+        Get.snackbar(
+          'Not Found',
+          'Employee not found with ID: $employeeId',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.orange.shade100,
+          colorText: Colors.orange.shade900,
+        );
+      }
+    } catch (e) {
+      print('Error fetching employee name: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to fetch employee information',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade100,
+        colorText: Colors.red.shade900,
+      );
+    }
   }
 
   void updateChildrenForms(int count) {
@@ -184,60 +224,92 @@ class EmployeeController extends GetxController {
     return false;
   }
 
-  void saveEmployee() {
+  Future<void> saveEmployee() async {
     if (!validateForm()) return;
 
-    // Create spouse model if married
-    SpouseModel? spouse;
-    if (selectedMaritalStatus.value == 'Married') {
-      spouse = SpouseModel(
-        name: spouseNameController.text,
-        occupation: spouseOccupationController.text,
-        dateOfBirth: spouseDobController.text,
-        numberOfChildren: numberOfChildren.value,
+    // Start loading
+    isLoading.value = true;
+
+    try {
+      // Create spouse model if married
+      SpouseModel? spouse;
+      if (selectedMaritalStatus.value == 'Married') {
+        spouse = SpouseModel(
+          name: spouseNameController.text,
+          occupation: spouseOccupationController.text,
+          dateOfBirth: spouseDobController.text,
+          numberOfChildren: numberOfChildren.value,
+          education: '', // Spouse education not collected in UI, default to empty
+        );
+      }
+
+      // Create children models
+      List<ChildModel> children = [];
+      for (int i = 0; i < childrenControllers.length; i++) {
+        children.add(ChildModel(
+          dateOfBirth: childrenControllers[i]['dob']!.text,
+          education: childrenControllers[i]['education']!.text,
+          gender: childrenGenders[i],
+        ));
+      }
+
+      // Create employee model
+      final employee = EmployeeModel(
+        company: selectedCompany.value,
+        employeeId: employeeIdController.text,
+        employeeName: employeeNameController.text,
+        maritalStatus: selectedMaritalStatus.value,
+        spouse: spouse,
+        children: children,
+        gender: selectedGender.value,
+        presentAddress: presentAddressController.text,
+        permanentAddress: permanentAddressController.text,
+        education: educationController.text,
       );
+
+      // Get logged-in user name for AddedBy field
+      final addedBy = await _sessionService.getEmployeeName() ??
+                      await _sessionService.getUserName() ??
+                      'Unknown';
+
+      // Call API to save employee data
+      final success = await _apiService.saveToBIS(
+        employee: employee,
+        addedBy: addedBy,
+      );
+
+      if (success) {
+        // Save employee to local list
+        savedEmployees.add(employee);
+        totalEntries.value++;
+
+        // Show success message
+        Get.snackbar(
+          'Success',
+          'Employee information saved successfully!',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.teal.shade100,
+          colorText: Colors.teal.shade900,
+          duration: const Duration(seconds: 2),
+        );
+
+        // Reset form but keep company selected
+        resetForm();
+      }
+    } catch (e) {
+      print('Error saving employee: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to save employee information. Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade100,
+        colorText: Colors.red.shade900,
+        duration: const Duration(seconds: 3),
+      );
+    } finally {
+      // Stop loading
+      isLoading.value = false;
     }
-
-    // Create children models
-    List<ChildModel> children = [];
-    for (int i = 0; i < childrenControllers.length; i++) {
-      children.add(ChildModel(
-        dateOfBirth: childrenControllers[i]['dob']!.text,
-        education: childrenControllers[i]['education']!.text,
-        gender: childrenGenders[i],
-      ));
-    }
-
-    // Create employee model
-    final employee = EmployeeModel(
-      company: selectedCompany.value,
-      employeeId: employeeIdController.text,
-      employeeName: employeeNameController.text,
-      maritalStatus: selectedMaritalStatus.value,
-      spouse: spouse,
-      children: children,
-      gender: selectedGender.value,
-      presentAddress: presentAddressController.text,
-      permanentAddress: permanentAddressController.text,
-      education: educationController.text,
-    );
-
-    // Save employee
-    savedEmployees.add(employee);
-    totalEntries.value++;
-
-    // Show success message
-    Get.snackbar(
-      'Success',
-      'Employee information saved successfully!',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.teal.shade100,
-      colorText: Colors.teal.shade900,
-      duration: const Duration(seconds: 2),
-    );
-
-    // Reset form but keep company selected
-    resetForm();
   }
 
   void resetForm() {

@@ -10,6 +10,7 @@ class EmployeeFormScreen extends StatelessWidget {
 
   final EmployeeController controller = Get.put(EmployeeController());
   final AuthController authController = Get.find<AuthController>();
+  final ScrollController scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -82,6 +83,7 @@ class EmployeeFormScreen extends StatelessWidget {
           children: [
             Expanded(
               child: SingleChildScrollView(
+                controller: scrollController,
                 padding: const EdgeInsets.all(16),
                 child: Form(
                   key: controller.formKey,
@@ -205,6 +207,7 @@ class EmployeeFormScreen extends StatelessWidget {
             const SizedBox(height: 16),
             TextFormField(
               controller: controller.employeeIdController,
+              focusNode: controller.employeeIdFocusNode,
               decoration: InputDecoration(
                 labelText: 'Employee ID *',
                 hintText: 'Enter employee ID',
@@ -215,9 +218,11 @@ class EmployeeFormScreen extends StatelessWidget {
                 filled: true,
                 fillColor: Colors.grey.shade50,
               ),
+              keyboardType: TextInputType.text,
+              textInputAction: TextInputAction.done,
               validator: controller.validateEmployeeId,
-              onChanged: (value) {
-                if (value.length >= 3) {
+              onFieldSubmitted: (value) {
+                if (value.isNotEmpty) {
                   controller.fetchEmployeeName(value);
                 }
               },
@@ -726,30 +731,56 @@ class EmployeeFormScreen extends StatelessWidget {
   }
 
   Widget _buildSaveButton() {
-    return ElevatedButton(
-      onPressed: _showSaveConfirmationDialog,
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        backgroundColor: Colors.teal.shade600,
-        foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        elevation: 4,
-      ),
-      child: const Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.save, size: 24),
-          SizedBox(width: 8),
-          Text(
-            'SAVE EMPLOYEE',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+    return Obx(
+      () => ElevatedButton(
+        onPressed: controller.isLoading.value
+            ? null
+            : _showSaveConfirmationDialog,
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          backgroundColor: Colors.teal.shade600,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
-        ],
+          elevation: 4,
+        ),
+        child: controller.isLoading.value
+            ? const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2.5,
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  Text(
+                    'SAVING...',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              )
+            : const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.save, size: 24),
+                  SizedBox(width: 8),
+                  Text(
+                    'SAVE EMPLOYEE',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }
@@ -787,9 +818,17 @@ class EmployeeFormScreen extends StatelessWidget {
             ),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Get.back();
-              controller.saveEmployee();
+              await controller.saveEmployee();
+              // Scroll to top after successful save
+              if (scrollController.hasClients) {
+                scrollController.animateTo(
+                  0,
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.easeOut,
+                );
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.teal.shade600,

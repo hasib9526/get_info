@@ -1,25 +1,71 @@
-D:\Flutter\get_info\images
-read this file i have put two images in this folder
-so read this image carefully
-then lets design this app
-firstly user select company TAL, RHL,BGL,MGL  je kono akta select korbe then oi selected company employee id dile employee name show korbe
+this first api for employee information
+Post:http://apps.bitopibd.com:8090/bimobapiv2/api/WorkerSurveyMaster/GetEmployee
+body:{
 
-then tar marital status select korbe . jodi married hoi tahole nichne akta form expanded hobe seta holo
-Spous name , occupation, date of birth , No of Children ,
-
-jodi children 3 thy tahole 3n ta form expanded hobe 2 hole 2i ta form expaned hobe
-
-form a thakbe childreb date of birsth education , gender
-
-then employee Gender select korbe , present address, permanent address then education input dibe
-
-every form has validation mane sob kisu dibe not optional
-
-then save dibe . Save dile total form ta refresh hobe onaly Factory same selected thakbe .  top akta hisab rakba kotota employee er information entry dewa hoise
+       "EmployeeID": "250324806",
+       "Factory": "00"
+     }
 
 
-soo make this app for clean code beautiful design for data entry make sweet better user exprience and
-use GetX statemanagement
 
-if your design is complete then i provide api for real data so firstly make design
+json Response:"Shakaowath Hossen"
 
+
+mane amar ei api ta ei body diya post korle amar employee name show or get kore
+
+
+and this is 2nd api for save employee data
+Post:http://apps.bitopibd.com:8090/bimobapiv2/api/WorkerSurveyMaster/ToBIS
+
+Body:{
+
+       "EmployeeID": "EMP002",
+       "Factory": "06",
+       "MaritalStatus": "Married",
+       "Gender": "Female",
+       "PresentAddress": "123 Green Street, Dhaka",
+       "PermanentAddress": "456 Blue Road, Chittagong",
+       "Education": "High School",
+       "IsMobileUser": true,
+       "SpouseName": "Rahim Ahmed",
+       "SpouseOccupation": "Teacher",
+       "SpouseEducation": "Bachelor's Degree",
+       "SpouseDOB": "1988-05-14T00:00:00",
+       "TotalNoofChildred": 2,
+       "AddedBy": "AdminUser",
+       "DateAdded": "2025-10-26T10:00:00",
+       "Childs": [
+         {
+
+
+
+           "DOB": "2012-03-10T00:00:00",
+           "Education": "Grade 6",
+           "Gender": "Male"
+         },
+         {
+
+
+
+           "DOB": "2016-07-22T00:00:00",
+           "Education": "Grade 2",
+           "Gender": "Female"
+         }
+       ]
+     }
+
+
+
+     eikane kisu information tmr buja ase segula holo select company Jodi TAL select kore tahole post hobe Factory=06 mane factory te 06 send hobe TAL er jonno
+
+
+     same vabe RHL=09
+     BGL=04
+     MGL=02
+
+
+     AddedBy hobe app a jini login thakbe tar name
+
+     so add api in this app
+
+     and do not change or break any Ui and other functionality
