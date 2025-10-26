@@ -22,6 +22,7 @@ class EmployeeFormScreen extends StatelessWidget {
         ),
         centerTitle: true,
         elevation: 0,
+        toolbarHeight: 45,
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -375,8 +376,10 @@ class EmployeeFormScreen extends StatelessWidget {
                 ),
                 filled: true,
                 fillColor: Colors.grey.shade50,
+                hintText: '0-99',
               ),
               keyboardType: TextInputType.number,
+              maxLength: 2,
               validator: controller.validateNumberOfChildren,
               onChanged: (value) {
                 final number = int.tryParse(value) ?? 0;

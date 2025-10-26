@@ -295,6 +295,9 @@ class EmployeeController extends GetxController {
     if (number == null || number < 0) {
       return 'Please enter a valid number';
     }
+    if (number > 99) {
+      return 'Maximum 99 children allowed';
+    }
     return null;
   }
 }
