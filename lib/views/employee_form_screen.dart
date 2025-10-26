@@ -91,25 +91,27 @@ class EmployeeFormScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                     _buildCompanySelectionCard(),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 10),
                     _buildEmployeeInfoCard(),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 10),
                     _buildEmployeeDetailsCard(),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 10),
                     _buildMaritalStatusCard(),
-                    const SizedBox(height: 16),
-                    Obx(() => controller.selectedMaritalStatus.value == 'Married'
+                    const SizedBox(height: 10),
+                    Obx(() => controller.selectedMaritalStatus.value.isNotEmpty &&
+                            controller.selectedMaritalStatus.value != 'Unmarried'
                         ? _buildSpouseInfoCard()
                         : const SizedBox.shrink()),
-                    const SizedBox(height: 16),
-                    Obx(() => controller.selectedMaritalStatus.value == 'Married' &&
+                    const SizedBox(height: 10),
+                    Obx(() => controller.selectedMaritalStatus.value.isNotEmpty &&
+                            controller.selectedMaritalStatus.value != 'Unmarried' &&
                             controller.numberOfChildren.value > 0
                         ? _buildChildrenFormsCard()
                         : const SizedBox.shrink()),
 
-                    const SizedBox(height:10),
+                     const SizedBox(height:2),
                     _buildSaveButton(),
-                    const SizedBox(height: 22),
+                    const SizedBox(height: 16),
                     ],
                   ),
                 ),
@@ -486,82 +488,35 @@ class EmployeeFormScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Obx(
-                          () => Row(
-                            children: [
-                              Expanded(
-                                child: ChoiceChip(
-                                  label: const Center(
-                                    child: Text('Male',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w600)),
-                                  ),
-                                  selected: controller.childrenGenders[index] ==
-                                      'Male',
-                                  selectedColor: Colors.blue.shade400,
-                                  backgroundColor: Colors.grey.shade200,
-                                  onSelected: (selected) {
-                                    controller.updateChildGender(index, 'Male');
-                                  },
-                                  labelStyle: TextStyle(
-                                    color:
-                                        controller.childrenGenders[index] ==
-                                                'Male'
-                                            ? Colors.white
-                                            : Colors.black87,
-                                  ),
+                          () => Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: controller.genders.map((gender) {
+                              return ChoiceChip(
+                                label: Text(
+                                  gender,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w600),
                                 ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: ChoiceChip(
-                                  label: const Center(
-                                    child: Text('Female',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w600)),
-                                  ),
-                                  selected: controller.childrenGenders[index] ==
-                                      'Female',
-                                  selectedColor: Colors.pink.shade400,
-                                  backgroundColor: Colors.grey.shade200,
-                                  onSelected: (selected) {
-                                    controller.updateChildGender(
-                                        index, 'Female');
-                                  },
-                                  labelStyle: TextStyle(
-                                    color:
-                                        controller.childrenGenders[index] ==
-                                                'Female'
-                                            ? Colors.white
-                                            : Colors.black87,
-                                  ),
+                                selected:
+                                    controller.childrenGenders[index] == gender,
+                                selectedColor: _getGenderColor(gender),
+                                backgroundColor: Colors.grey.shade200,
+                                onSelected: (selected) {
+                                  controller.updateChildGender(index, gender);
+                                },
+                                labelStyle: TextStyle(
+                                  color:
+                                      controller.childrenGenders[index] == gender
+                                          ? Colors.white
+                                          : Colors.black87,
                                 ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: ChoiceChip(
-                                  label: const Center(
-                                    child: Text('Others',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w600)),
-                                  ),
-                                  selected: controller.childrenGenders[index] ==
-                                      'Others',
-                                  selectedColor: Colors.purple.shade400,
-                                  backgroundColor: Colors.grey.shade200,
-                                  onSelected: (selected) {
-                                    controller.updateChildGender(
-                                        index, 'Others');
-                                  },
-                                  labelStyle: TextStyle(
-                                    color:
-                                        controller.childrenGenders[index] ==
-                                                'Others'
-                                            ? Colors.white
-                                            : Colors.black87,
-                                  ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
                                 ),
-                              ),
-                            ],
+                              );
+                            }).toList(),
                           ),
                         ),
                       ],
@@ -614,18 +569,20 @@ class EmployeeFormScreen extends StatelessWidget {
                   () => Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: [
-                      ChoiceChip(
-                        label: const Text('Male',
-                            style: TextStyle(fontWeight: FontWeight.w600)),
-                        selected: controller.selectedGender.value == 'Male',
-                        selectedColor: Colors.blue.shade400,
+                    children: controller.genders.map((gender) {
+                      return ChoiceChip(
+                        label: Text(
+                          gender,
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        selected: controller.selectedGender.value == gender,
+                        selectedColor: _getGenderColor(gender),
                         backgroundColor: Colors.grey.shade200,
                         onSelected: (selected) {
-                          controller.selectedGender.value = 'Male';
+                          controller.selectedGender.value = gender;
                         },
                         labelStyle: TextStyle(
-                          color: controller.selectedGender.value == 'Male'
+                          color: controller.selectedGender.value == gender
                               ? Colors.white
                               : Colors.black87,
                         ),
@@ -633,46 +590,8 @@ class EmployeeFormScreen extends StatelessWidget {
                           horizontal: 16,
                           vertical: 8,
                         ),
-                      ),
-                      ChoiceChip(
-                        label: const Text('Female',
-                            style: TextStyle(fontWeight: FontWeight.w600)),
-                        selected: controller.selectedGender.value == 'Female',
-                        selectedColor: Colors.pink.shade400,
-                        backgroundColor: Colors.grey.shade200,
-                        onSelected: (selected) {
-                          controller.selectedGender.value = 'Female';
-                        },
-                        labelStyle: TextStyle(
-                          color: controller.selectedGender.value == 'Female'
-                              ? Colors.white
-                              : Colors.black87,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                      ),
-                      ChoiceChip(
-                        label: const Text('Others',
-                            style: TextStyle(fontWeight: FontWeight.w600)),
-                        selected: controller.selectedGender.value == 'Others',
-                        selectedColor: Colors.purple.shade400,
-                        backgroundColor: Colors.grey.shade200,
-                        onSelected: (selected) {
-                          controller.selectedGender.value = 'Others';
-                        },
-                        labelStyle: TextStyle(
-                          color: controller.selectedGender.value == 'Others'
-                              ? Colors.white
-                              : Colors.black87,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                      ),
-                    ],
+                      );
+                    }).toList(),
                   ),
                 ),
               ],
@@ -689,7 +608,7 @@ class EmployeeFormScreen extends StatelessWidget {
                 filled: true,
                 fillColor: Colors.grey.shade50,
               ),
-              maxLines: 2,
+              maxLines: 1,
               validator: (value) =>
                   controller.validateRequired(value, 'Present Address'),
             ),
@@ -705,7 +624,7 @@ class EmployeeFormScreen extends StatelessWidget {
                 filled: true,
                 fillColor: Colors.grey.shade50,
               ),
-              maxLines: 2,
+              maxLines: 1,
               validator: (value) =>
                   controller.validateRequired(value, 'Permanent Address'),
             ),
@@ -874,6 +793,23 @@ class EmployeeFormScreen extends StatelessWidget {
 
     if (picked != null) {
       controller.text = DateFormat('dd/MM/yyyy').format(picked);
+    }
+  }
+
+  Color _getGenderColor(String gender) {
+    switch (gender) {
+      case 'Male':
+        return Colors.blue.shade400;
+      case 'Female':
+        return Colors.pink.shade400;
+      case 'Transgender':
+        return Colors.purple.shade400;
+      case 'Non-binary':
+        return Colors.teal.shade400;
+      case 'Others':
+        return Colors.orange.shade400;
+      default:
+        return Colors.grey.shade400;
     }
   }
 }

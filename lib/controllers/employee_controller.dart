@@ -32,6 +32,13 @@ class EmployeeController extends GetxController {
   final numberOfChildren = 0.obs;
 
   // Employee info
+  final List<String> genders = [
+    'Male',
+    'Female',
+    'Transgender',
+    'Non-binary',
+    'Others'
+  ];
   final selectedGender = ''.obs;
   final presentAddressController = TextEditingController();
   final permanentAddressController = TextEditingController();
@@ -61,8 +68,8 @@ class EmployeeController extends GetxController {
 
     // Listen to marital status changes
     selectedMaritalStatus.listen((status) {
-      if (status != 'Married') {
-        // Clear spouse and children information when not married
+      if (status == 'Unmarried') {
+        // Clear spouse and children information only when unmarried
         spouseNameController.clear();
         spouseOccupationController.clear();
         spouseDobController.clear();
@@ -231,9 +238,10 @@ class EmployeeController extends GetxController {
     isLoading.value = true;
 
     try {
-      // Create spouse model if married
+      // Create spouse model if not unmarried (for Married, Divorced, Widow, Separated)
       SpouseModel? spouse;
-      if (selectedMaritalStatus.value == 'Married') {
+      if (selectedMaritalStatus.value.isNotEmpty &&
+          selectedMaritalStatus.value != 'Unmarried') {
         spouse = SpouseModel(
           name: spouseNameController.text,
           occupation: spouseOccupationController.text,
@@ -283,14 +291,48 @@ class EmployeeController extends GetxController {
         savedEmployees.add(employee);
         totalEntries.value++;
 
-        // Show success message
-        Get.snackbar(
-          'Success',
-          'Employee information saved successfully!',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.teal.shade100,
-          colorText: Colors.teal.shade900,
-          duration: const Duration(seconds: 2),
+        // Show success message in center
+        Get.dialog(
+          AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.teal.shade600, size: 28),
+                const SizedBox(width: 12),
+                const Text(
+                  'Success',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            content: const Text(
+              'Employee information saved successfully!',
+              style: TextStyle(fontSize: 16),
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () => Get.back(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal.shade600,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+                child: const Text(
+                  'OK',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          barrierDismissible: false,
         );
 
         // Reset form but keep company selected
@@ -314,16 +356,13 @@ class EmployeeController extends GetxController {
 
   void resetForm() {
     final currentCompany = selectedCompany.value;
+    final currentEmployeeId = employeeIdController.text;
+    final currentEmployeeName = employeeNameController.text;
 
-    // Clear text controllers
-    employeeIdController.clear();
-    employeeNameController.clear();
-    spouseNameController.clear();
-    spouseOccupationController.clear();
-    spouseDobController.clear();
-    presentAddressController.clear();
-    permanentAddressController.clear();
-    educationController.clear();
+    // Reset reactive variables (except company)
+    selectedMaritalStatus.value = '';
+    numberOfChildren.value = 0;
+    selectedGender.value = '';
 
     // Clear children controllers
     for (var controllers in childrenControllers) {
@@ -333,16 +372,18 @@ class EmployeeController extends GetxController {
     childrenControllers.clear();
     childrenGenders.clear();
 
-    // Reset reactive variables (except company)
-    selectedMaritalStatus.value = '';
-    numberOfChildren.value = 0;
-    selectedGender.value = '';
+    // Clear text controllers (except employee ID and name)
+    spouseNameController.clear();
+    spouseOccupationController.clear();
+    spouseDobController.clear();
+    presentAddressController.clear();
+    permanentAddressController.clear();
+    educationController.clear();
 
-    // Keep company selected
+    // Keep company, employee ID and name
     selectedCompany.value = currentCompany;
-
-    // Reset form key
-    formKey.currentState?.reset();
+    employeeIdController.text = currentEmployeeId;
+    employeeNameController.text = currentEmployeeName;
   }
 
   String? validateRequired(String? value, String fieldName) {
