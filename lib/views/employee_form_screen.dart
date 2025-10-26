@@ -2,17 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../controllers/employee_controller.dart';
+import '../controllers/auth_controller.dart';
+import '../widgets/custom_drawer.dart';
 
 class EmployeeFormScreen extends StatelessWidget {
   EmployeeFormScreen({super.key});
 
   final EmployeeController controller = Get.put(EmployeeController());
+  final AuthController authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
+      drawer: CustomDrawer(authController: authController),
       appBar: AppBar(
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu, color: Colors.white),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
         title: const Text(
           'Employee Information Entry',
           style: TextStyle(
