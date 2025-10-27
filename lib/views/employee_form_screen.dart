@@ -326,62 +326,93 @@ class EmployeeFormScreen extends StatelessWidget {
               children: [
                 Icon(Icons.people_alt, color: Colors.purple.shade700),
                 const SizedBox(width: 8),
-                const Text(
-                  'Spouse Information',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                Obx(
+                  () => Text(
+                    controller.selectedMaritalStatus.value == 'Married'
+                        ? 'Spouse Information'
+                        : 'Spouse Information (Optional)',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            TextFormField(
-              controller: controller.spouseNameController,
-              decoration: InputDecoration(
-                labelText: 'Spouse Name *',
-                prefixIcon: const Icon(Icons.person_outline),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+            Obx(
+              () => TextFormField(
+                controller: controller.spouseNameController,
+                decoration: InputDecoration(
+                  labelText: controller.selectedMaritalStatus.value == 'Married'
+                      ? 'Spouse Name *'
+                      : 'Spouse Name',
+                  prefixIcon: const Icon(Icons.person_outline),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey.shade50,
                 ),
-                filled: true,
-                fillColor: Colors.grey.shade50,
+                validator: (value) {
+                  // Required only for Married status
+                  if (controller.selectedMaritalStatus.value == 'Married') {
+                    return controller.validateRequired(value, 'Spouse Name');
+                  }
+                  return null; // Optional for Divorced/Widow/Separated
+                },
               ),
-              validator: (value) =>
-                  controller.validateRequired(value, 'Spouse Name'),
             ),
             const SizedBox(height: 12),
-            TextFormField(
-              controller: controller.spouseOccupationController,
-              decoration: InputDecoration(
-                labelText: 'Spouse Occupation *',
-                prefixIcon: const Icon(Icons.work_outline),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+            Obx(
+              () => TextFormField(
+                controller: controller.spouseOccupationController,
+                decoration: InputDecoration(
+                  labelText: controller.selectedMaritalStatus.value == 'Married'
+                      ? 'Spouse Occupation *'
+                      : 'Spouse Occupation',
+                  prefixIcon: const Icon(Icons.work_outline),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey.shade50,
                 ),
-                filled: true,
-                fillColor: Colors.grey.shade50,
+                validator: (value) {
+                  // Required only for Married status
+                  if (controller.selectedMaritalStatus.value == 'Married') {
+                    return controller.validateRequired(value, 'Spouse Occupation');
+                  }
+                  return null; // Optional for Divorced/Widow/Separated
+                },
               ),
-              validator: (value) =>
-                  controller.validateRequired(value, 'Spouse Occupation'),
             ),
             const SizedBox(height: 12),
-            TextFormField(
-              controller: controller.spouseDobController,
-              decoration: InputDecoration(
-                labelText: 'Spouse Date of Birth *',
-                prefixIcon: const Icon(Icons.calendar_today),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+            Obx(
+              () => TextFormField(
+                controller: controller.spouseDobController,
+                decoration: InputDecoration(
+                  labelText: controller.selectedMaritalStatus.value == 'Married'
+                      ? 'Spouse Date of Birth *'
+                      : 'Spouse Date of Birth',
+                  prefixIcon: const Icon(Icons.calendar_today),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey.shade50,
+                  hintText: 'DD/MM/YYYY',
                 ),
-                filled: true,
-                fillColor: Colors.grey.shade50,
-                hintText: 'DD/MM/YYYY',
+                readOnly: true,
+                onTap: () => _selectDate(controller.spouseDobController),
+                validator: (value) {
+                  // Required only for Married status
+                  if (controller.selectedMaritalStatus.value == 'Married') {
+                    return controller.validateRequired(value, 'Spouse Date of Birth');
+                  }
+                  return null; // Optional for Divorced/Widow/Separated
+                },
               ),
-              readOnly: true,
-              onTap: () => _selectDate(controller.spouseDobController),
-              validator: (value) =>
-                  controller.validateRequired(value, 'Spouse Date of Birth'),
             ),
             const SizedBox(height: 12),
             TextFormField(

@@ -242,13 +242,23 @@ class EmployeeController extends GetxController {
       SpouseModel? spouse;
       if (selectedMaritalStatus.value.isNotEmpty &&
           selectedMaritalStatus.value != 'Unmarried') {
-        spouse = SpouseModel(
-          name: spouseNameController.text,
-          occupation: spouseOccupationController.text,
-          dateOfBirth: spouseDobController.text,
-          numberOfChildren: numberOfChildren.value,
-          education: '', // Spouse education not collected in UI, default to empty
-        );
+
+        // Check if any spouse field has data
+        bool hasSpouseData = spouseNameController.text.trim().isNotEmpty ||
+                             spouseOccupationController.text.trim().isNotEmpty ||
+                             spouseDobController.text.trim().isNotEmpty;
+
+        // Only create spouse model if at least one field is filled
+        // OR if marital status is Married (required)
+        if (hasSpouseData || selectedMaritalStatus.value == 'Married') {
+          spouse = SpouseModel(
+            name: spouseNameController.text,
+            occupation: spouseOccupationController.text,
+            dateOfBirth: spouseDobController.text,
+            numberOfChildren: numberOfChildren.value,
+            education: '', // Spouse education not collected in UI, default to empty
+          );
+        }
       }
 
       // Create children models
