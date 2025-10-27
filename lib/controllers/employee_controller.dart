@@ -133,7 +133,7 @@ class EmployeeController extends GetxController {
         Get.snackbar(
           'Not Found',
           'Employee not found with ID: $employeeId',
-          snackPosition: SnackPosition.BOTTOM,
+          snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.orange.shade100,
           colorText: Colors.orange.shade900,
         );
@@ -141,9 +141,9 @@ class EmployeeController extends GetxController {
     } catch (e) {
       print('Error fetching employee name: $e');
       Get.snackbar(
-        'Error',
-        'Failed to fetch employee information',
-        snackPosition: SnackPosition.BOTTOM,
+        'Not Found',
+        'Employee not found with ID: $employeeId',
+        snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.red.shade100,
         colorText: Colors.red.shade900,
       );
