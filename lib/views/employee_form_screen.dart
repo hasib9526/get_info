@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../controllers/employee_controller.dart';
 import '../controllers/auth_controller.dart';
+import '../controllers/color_controller.dart';
 import '../widgets/custom_drawer.dart';
 
 class EmployeeFormScreen extends StatelessWidget {
@@ -10,39 +11,41 @@ class EmployeeFormScreen extends StatelessWidget {
 
   final EmployeeController controller = Get.put(EmployeeController());
   final AuthController authController = Get.find<AuthController>();
+  final ColorController colorController = Get.find<ColorController>();
   final ScrollController scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      drawer: CustomDrawer(authController: authController),
-      appBar: AppBar(
-        leading: Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.menu, color: Colors.white),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-          ),
-        ),
-        title: const Text(
-          'Employee Information Entry',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        centerTitle: true,
-        elevation: 0,
-        toolbarHeight: 45,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.teal.shade700, Colors.teal.shade500],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+    return Obx(
+      () => Scaffold(
+        backgroundColor: Colors.grey[50],
+        drawer: CustomDrawer(authController: authController),
+        appBar: AppBar(
+          leading: Builder(
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white),
+              onPressed: () => Scaffold.of(context).openDrawer(),
             ),
           ),
-        ),
+          title: const Text(
+            'Employee Information Entry',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          centerTitle: true,
+          elevation: 0,
+          toolbarHeight: 45,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [colorController.darkColor, colorController.primaryColor],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
         actions: [
           Obx(
             () => Container(
@@ -120,6 +123,7 @@ class EmployeeFormScreen extends StatelessWidget {
           ],
         ),
       ),
+      ),
     );
   }
 
@@ -134,14 +138,14 @@ class EmployeeFormScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.business, color: Colors.teal.shade700),
+                Icon(Icons.business, color: colorController.darkColor),
                 const SizedBox(width: 8),
                 Text(
                   'Select Company',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.teal.shade700,
+                    color: colorController.darkColor,
                   ),
                 ),
                 const Text(
@@ -166,7 +170,7 @@ class EmployeeFormScreen extends StatelessWidget {
                       ),
                     ),
                     selected: isSelected,
-                    selectedColor: Colors.teal.shade700,
+                    selectedColor: colorController.darkColor,
                     backgroundColor: Colors.grey.shade200,
                     checkmarkColor: Colors.white,
                     onSelected: (selected) {
@@ -197,14 +201,14 @@ class EmployeeFormScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.badge, color: Colors.teal.shade700),
+                Icon(Icons.badge, color: colorController.darkColor),
                 const SizedBox(width: 8),
                 Text(
                   'Employee Information',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.teal.shade700
+                    color: colorController.darkColor
                   ),
                 ),
               ],
@@ -216,7 +220,7 @@ class EmployeeFormScreen extends StatelessWidget {
               decoration: InputDecoration(
                 labelText: 'Employee ID *',
                 hintText: 'Enter employee ID',
-                prefixIcon: Icon(Icons.numbers,color: Colors.teal.shade700,),
+                prefixIcon: Icon(Icons.numbers,color: colorController.darkColor,),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -238,7 +242,7 @@ class EmployeeFormScreen extends StatelessWidget {
               decoration: InputDecoration(
                 labelText: 'Employee Name *',
                 hintText: 'Auto-filled or enter manually',
-                prefixIcon:  Icon(Icons.person,color: Colors.teal.shade700,),
+                prefixIcon:  Icon(Icons.person,color: colorController.darkColor,),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -265,14 +269,14 @@ class EmployeeFormScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.favorite, color: Colors.teal.shade700),
+                Icon(Icons.favorite, color: colorController.darkColor),
                 const SizedBox(width: 8),
                  Text(
                   'Marital Status',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.teal.shade700
+                    color: colorController.darkColor
                   ),
                 ),
                 const Text(
@@ -298,7 +302,7 @@ class EmployeeFormScreen extends StatelessWidget {
                       ),
                     ),
                     selected: isSelected,
-                    selectedColor: Colors.teal.shade700,
+                    selectedColor: colorController.darkColor,
                     backgroundColor: Colors.grey.shade200,
                     checkmarkColor: Colors.white,
                     onSelected: (selected) {
@@ -329,7 +333,7 @@ class EmployeeFormScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.people_alt, color: Colors.teal.shade700),
+                Icon(Icons.people_alt, color: colorController.darkColor),
                 const SizedBox(width: 8),
                 Obx(
                   () => Text(
@@ -339,7 +343,7 @@ class EmployeeFormScreen extends StatelessWidget {
                     style:  TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.teal.shade700
+                      color: colorController.darkColor
                     ),
                   ),
                 ),
@@ -353,7 +357,7 @@ class EmployeeFormScreen extends StatelessWidget {
                   labelText: controller.selectedMaritalStatus.value == 'Married'
                       ? 'Spouse Name *'
                       : 'Spouse Name',
-                  prefixIcon:  Icon(Icons.person_outline,color: Colors.teal.shade700,),
+                  prefixIcon:  Icon(Icons.person_outline,color: colorController.darkColor,),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -377,7 +381,7 @@ class EmployeeFormScreen extends StatelessWidget {
                   labelText: controller.selectedMaritalStatus.value == 'Married'
                       ? 'Spouse Occupation *'
                       : 'Spouse Occupation',
-                  prefixIcon: Icon(Icons.work_outline,color: Colors.teal.shade700,),
+                  prefixIcon: Icon(Icons.work_outline,color: colorController.darkColor,),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -401,7 +405,7 @@ class EmployeeFormScreen extends StatelessWidget {
                   labelText: controller.selectedMaritalStatus.value == 'Married'
                       ? 'Spouse Date of Birth *'
                       : 'Spouse Date of Birth',
-                  prefixIcon:  Icon(Icons.calendar_today,color: Colors.teal.shade700,),
+                  prefixIcon:  Icon(Icons.calendar_today,color: colorController.darkColor,),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -424,7 +428,7 @@ class EmployeeFormScreen extends StatelessWidget {
             TextFormField(
               decoration: InputDecoration(
                 labelText: 'Number of Children *',
-                prefixIcon:  Icon(Icons.child_care,color: Colors.teal.shade700,),
+                prefixIcon:  Icon(Icons.child_care,color: colorController.darkColor,),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -466,14 +470,14 @@ class EmployeeFormScreen extends StatelessWidget {
                     Row(
                       children: [
                         Icon(Icons.child_care_outlined,
-                            color:Colors.teal.shade700),
+                            color:colorController.darkColor),
                         const SizedBox(width: 8),
                         Text(
                           'Child ${index + 1} Information',
                           style:  TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.teal.shade700
+                            color: colorController.darkColor
                           ),
                         ),
                       ],
@@ -483,7 +487,7 @@ class EmployeeFormScreen extends StatelessWidget {
                       controller: controller.childrenControllers[index]['dob'],
                       decoration: InputDecoration(
                         labelText: 'Date of Birth *',
-                        prefixIcon:  Icon(Icons.calendar_today,color: Colors.teal.shade700,),
+                        prefixIcon:  Icon(Icons.calendar_today,color: colorController.darkColor,),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -503,7 +507,7 @@ class EmployeeFormScreen extends StatelessWidget {
                           controller.childrenControllers[index]['education'],
                       decoration: InputDecoration(
                         labelText: 'Education *',
-                        prefixIcon:  Icon(Icons.school,color: Colors.teal.shade700,),
+                        prefixIcon:  Icon(Icons.school,color: colorController.darkColor,),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -581,14 +585,14 @@ class EmployeeFormScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.info_outline, color: Colors.teal.shade700),
+                Icon(Icons.info_outline, color: colorController.darkColor),
                 const SizedBox(width: 8),
                 Text(
                   'Employee Details',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.teal.shade700
+                    color: colorController.darkColor
                   ),
                 ),
               ],
@@ -644,7 +648,7 @@ class EmployeeFormScreen extends StatelessWidget {
                 labelText: 'Present Address *',
                 hintText: 'Enter your present address',
 
-                prefixIcon:  Icon(Icons.home,color: Colors.teal.shade700,),
+                prefixIcon:  Icon(Icons.home,color: colorController.darkColor,),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -661,7 +665,7 @@ class EmployeeFormScreen extends StatelessWidget {
               decoration: InputDecoration(
                 labelText: 'Permanent Address *',
                 hintText: 'Enter your permanent address',
-                prefixIcon:  Icon(Icons.location_on,color: Colors.teal.shade700,),
+                prefixIcon:  Icon(Icons.location_on,color: colorController.darkColor,),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -678,7 +682,7 @@ class EmployeeFormScreen extends StatelessWidget {
               decoration: InputDecoration(
                 labelText: 'Education *',
                 hintText: 'Enter your education level',
-                prefixIcon:  Icon(Icons.school,color: Colors.teal.shade700,),
+                prefixIcon:  Icon(Icons.school,color: colorController.darkColor,),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -702,7 +706,7 @@ class EmployeeFormScreen extends StatelessWidget {
             : _showSaveConfirmationDialog,
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
-          backgroundColor: Colors.teal.shade600,
+          backgroundColor: colorController.primaryColor,
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -795,7 +799,7 @@ class EmployeeFormScreen extends StatelessWidget {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.teal.shade600,
+              backgroundColor: colorController.primaryColor,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -826,7 +830,7 @@ class EmployeeFormScreen extends StatelessWidget {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: Colors.teal.shade700,
+              primary: colorController.darkColor,
               onPrimary: Colors.white,
               onSurface: Colors.black,
             ),
@@ -844,17 +848,17 @@ class EmployeeFormScreen extends StatelessWidget {
   Color _getGenderColor(String gender) {
     switch (gender) {
       case 'Male':
-        return Colors.teal.shade700;
+        return colorController.darkColor;
       case 'Female':
-        return Colors.teal.shade700;
+        return colorController.darkColor;
       case 'Transgender':
-        return Colors.teal.shade700;
+        return colorController.darkColor;
       case 'Non-binary':
-        return Colors.teal.shade700;
+        return colorController.darkColor;
       case 'Others':
-        return Colors.teal.shade700;
+        return colorController.darkColor;
       default:
-        return Colors.teal.shade700;
+        return colorController.darkColor;
     }
   }
 }

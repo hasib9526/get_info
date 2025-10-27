@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
+import '../controllers/color_controller.dart';
 import 'employee_form_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
 
   final AuthController authController = Get.put(AuthController());
+  final ColorController colorController = Get.find<ColorController>();
   final _formKey = GlobalKey<FormState>();
   final _userNameController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -26,19 +28,20 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.teal.shade100.withOpacity(0.3),
-              Colors.teal.shade50.withOpacity(0.2),
-              Colors.white,
-            ],
+    return Obx(
+      () => Scaffold(
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                colorController.primaryColor.withOpacity(0.1),
+                colorController.primaryColor.withOpacity(0.05),
+                Colors.white,
+              ],
+            ),
           ),
-        ),
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
@@ -47,7 +50,7 @@ class LoginScreen extends StatelessWidget {
                 constraints: const BoxConstraints(maxWidth: 400),
                 child: Card(
                   elevation: 8,
-                  shadowColor: Colors.teal.withOpacity(0.3),
+                  shadowColor: colorController.primaryColor.withOpacity(0.3),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -64,14 +67,14 @@ class LoginScreen extends StatelessWidget {
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  Colors.teal.shade700,
-                                  Colors.teal.shade500
+                                  colorController.darkColor,
+                                  colorController.primaryColor
                                 ],
                               ),
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.teal.withOpacity(0.3),
+                                  color: colorController.primaryColor.withOpacity(0.3),
                                   blurRadius: 15,
                                   offset: const Offset(0, 5),
                                 ),
@@ -92,7 +95,7 @@ class LoginScreen extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
-                              color: Colors.teal.shade800,
+                              color: colorController.darkColor,
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -116,10 +119,10 @@ class LoginScreen extends StatelessWidget {
                             width: double.infinity,
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: Colors.teal.shade50,
+                              color: colorController.lightColor,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: Colors.teal.shade100,
+                                color: colorController.lightColor,
                                 width: 1,
                               ),
                             ),
@@ -129,7 +132,7 @@ class LoginScreen extends StatelessWidget {
                                   'Welcome Back!',
                                   style: TextStyle(
                                     fontSize: 20,
-                                    color: Colors.teal.shade700,
+                                    color: colorController.darkColor,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -157,12 +160,12 @@ class LoginScreen extends StatelessWidget {
                                 margin: const EdgeInsets.all(8),
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: Colors.teal.shade50,
+                                  color: colorController.lightColor,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Icon(
                                   Icons.person_outline,
-                                  color: Colors.teal.shade700,
+                                  color: colorController.darkColor,
                                   size: 20,
                                 ),
                               ),
@@ -193,12 +196,12 @@ class LoginScreen extends StatelessWidget {
                                     margin: const EdgeInsets.all(8),
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: Colors.teal.shade50,
+                                      color: colorController.lightColor,
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Icon(
                                       Icons.lock_outline,
-                                      color: Colors.teal.shade700,
+                                      color: colorController.darkColor,
                                       size: 20,
                                     ),
                                   ),
@@ -226,14 +229,14 @@ class LoginScreen extends StatelessWidget {
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    Colors.teal.shade700,
-                                    Colors.teal.shade500
+                                    colorController.darkColor,
+                                    colorController.primaryColor
                                   ],
                                 ),
                                 borderRadius: BorderRadius.circular(12),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.teal.withOpacity(0.3),
+                                    color: colorController.primaryColor.withOpacity(0.3),
                                     blurRadius: 12,
                                     offset: const Offset(0, 4),
                                   ),
@@ -337,6 +340,7 @@ class LoginScreen extends StatelessWidget {
             ),
           ),
         ),
+      ),
       ),
     );
   }

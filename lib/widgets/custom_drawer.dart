@@ -3,12 +3,14 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
+import '../controllers/color_controller.dart';
 import '../views/login_screen.dart';
 
 class CustomDrawer extends StatelessWidget {
   final AuthController authController;
+  final ColorController colorController = Get.find<ColorController>();
 
-  const CustomDrawer({
+  CustomDrawer({
     super.key,
     required this.authController,
   });
@@ -35,49 +37,51 @@ class CustomDrawer extends StatelessWidget {
                 }
               }
 
-              return UserAccountsDrawerHeader(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.teal.shade700, Colors.teal.shade500],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+              return Obx(
+                () => UserAccountsDrawerHeader(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [colorController.darkColor, colorController.primaryColor],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
                   ),
-                ),
-                currentAccountPicture: CircleAvatar(
-                  radius: 40,
-                  backgroundColor: Colors.white,
-                  child: byteImage != null
-                      ? ClipOval(
-                          child: Image.memory(
-                            byteImage,
-                            width: 80,
-                            height: 80,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Icon(
-                                Icons.person,
-                                size: 50,
-                                color: Colors.teal.shade700,
-                              );
-                            },
+                  currentAccountPicture: CircleAvatar(
+                    radius: 40,
+                    backgroundColor: Colors.white,
+                    child: byteImage != null
+                        ? ClipOval(
+                            child: Image.memory(
+                              byteImage,
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Icon(
+                                  Icons.person,
+                                  size: 50,
+                                  color: colorController.primaryColor,
+                                );
+                              },
+                            ),
+                          )
+                        : Icon(
+                            Icons.person,
+                            size: 50,
+                            color: colorController.primaryColor,
                           ),
-                        )
-                      : Icon(
-                          Icons.person,
-                          size: 50,
-                          color: Colors.teal.shade700,
-                        ),
-                ),
-                accountName: Text(
-                  authController.displayName,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
                   ),
-                ),
-                accountEmail: Text(
-                  authController.displayEmail,
-                  style: const TextStyle(fontSize: 14),
+                  accountName: Text(
+                    authController.displayName,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                  accountEmail: Text(
+                    authController.displayEmail,
+                    style: const TextStyle(fontSize: 14),
+                  ),
                 ),
               );
             },
@@ -118,7 +122,12 @@ class CustomDrawer extends StatelessWidget {
                       subtitle: authController.displayDepartment,
                     ),
                   ),
-                  const Divider(height: 32, thickness: 1),
+
+
+                  // Color Selector Section
+                  _buildColorSelector(),
+
+
 
                   // Logout Button
                   ListTile(
@@ -163,31 +172,135 @@ class CustomDrawer extends StatelessWidget {
     required String title,
     required String subtitle,
   }) {
-    return ListTile(
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Colors.teal.shade50,
-          borderRadius: BorderRadius.circular(8),
+    return Obx(
+      () => ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: colorController.lightColor,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            color: colorController.primaryColor,
+            size: 24,
+          ),
         ),
-        child: Icon(
-          icon,
-          color: Colors.teal.shade700,
-          size: 24,
+        title: Text(
+          title,
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey.shade600,
+          ),
+        ),
+        subtitle: Text(
+          subtitle,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontSize: 12,
-          color: Colors.grey.shade600,
-        ),
-      ),
-      subtitle: Text(
-        subtitle,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
+    );
+  }
+
+  Widget _buildColorSelector() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Obx(
+        () => Container(
+          decoration: BoxDecoration(
+            color: colorController.lightColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: colorController.primaryColor.withOpacity(0.3),
+              width: 1,
+            ),
+          ),
+          child: Theme(
+            data: ThemeData(
+              splashColor: colorController.primaryColor.withOpacity(0.1),
+              highlightColor: colorController.primaryColor.withOpacity(0.05),
+            ),
+            child: ExpansionTile(
+              leading: Icon(
+                Icons.palette,
+                color: colorController.primaryColor,
+                size: 20,
+              ),
+              title: Text(
+                'Theme Color',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: colorController.primaryColor,
+                ),
+              ),
+              subtitle: Text(
+                colorController.appColors[colorController.selectedColorIndex.value]['name'],
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+              trailing: Icon(
+                Icons.arrow_drop_down,
+                color: colorController.primaryColor,
+              ),
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 8,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                    ),
+                    itemCount: colorController.appColors.length,
+                    itemBuilder: (context, index) {
+                      return Obx(
+                        () => GestureDetector(
+                          onTap: () => colorController.changeColor(index),
+                          child: Tooltip(
+                            message: colorController.appColors[index]['name'],
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: colorController.appColors[index]['primary'],
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: colorController.selectedColorIndex.value == index
+                                      ? Colors.black
+                                      : Colors.transparent,
+                                  width: 2,
+                                ),
+                                boxShadow: [
+                                  if (colorController.selectedColorIndex.value == index)
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.3),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                ],
+                              ),
+                              child: colorController.selectedColorIndex.value == index
+                                  ? const Icon(
+                                      Icons.check,
+                                      color: Colors.white,
+                                      size: 14,
+                                    )
+                                  : null,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

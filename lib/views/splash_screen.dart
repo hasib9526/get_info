@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
+import '../controllers/color_controller.dart';
 import 'login_screen.dart';
 import 'employee_form_screen.dart';
 
@@ -16,6 +17,7 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
+  final ColorController colorController = Get.find<ColorController>();
 
   @override
   void initState() {
@@ -72,40 +74,41 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.teal.shade700,
-      body: Center(
-        child: AnimatedBuilder(
-          animation: _animationController,
-          builder: (context, child) {
-            return FadeTransition(
-              opacity: _fadeAnimation,
-              child: ScaleTransition(
-                scale: _scaleAnimation,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Logo/Icon
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 20,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
+    return Obx(
+      () => Scaffold(
+        backgroundColor: colorController.darkColor,
+        body: Center(
+          child: AnimatedBuilder(
+            animation: _animationController,
+            builder: (context, child) {
+              return FadeTransition(
+                opacity: _fadeAnimation,
+                child: ScaleTransition(
+                  scale: _scaleAnimation,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Logo/Icon
+                      Container(
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          Icons.people,
+                          size: 60,
+                          color: colorController.darkColor,
+                        ),
                       ),
-                      child: Icon(
-                        Icons.people,
-                        size: 60,
-                        color: Colors.teal.shade700,
-                      ),
-                    ),
                     const SizedBox(height: 32),
 
                     // App Title
@@ -146,6 +149,7 @@ class _SplashScreenState extends State<SplashScreen>
             );
           },
         ),
+      ),
       ),
     );
   }
