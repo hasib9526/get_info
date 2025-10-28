@@ -5,6 +5,7 @@ import '../controllers/employee_controller.dart';
 import '../controllers/auth_controller.dart';
 import '../controllers/color_controller.dart';
 import '../widgets/custom_drawer.dart';
+import '../widgets/custom_text_field.dart';
 
 class EmployeeFormScreen extends StatelessWidget {
   EmployeeFormScreen({super.key});
@@ -211,22 +212,19 @@ class EmployeeFormScreen extends StatelessWidget {
                     color: colorController.darkColor
                   ),
                 ),
+                const Text(
+                  ' *',
+                  style: TextStyle(color: Colors.red, fontSize: 18),
+                ),
               ],
             ),
             const SizedBox(height: 16),
-            TextFormField(
+            CustomTextField(
               controller: controller.employeeIdController,
               focusNode: controller.employeeIdFocusNode,
-              decoration: InputDecoration(
-                labelText: 'Employee ID *',
-                hintText: 'Enter employee ID',
-                prefixIcon: Icon(Icons.numbers,color: colorController.darkColor,),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                filled: true,
-                fillColor: Colors.grey.shade50,
-              ),
+              labelText: 'Employee ID *',
+              hintText: 'Enter employee ID',
+              prefixIcon: Icons.numbers,
               keyboardType: TextInputType.text,
               textInputAction: TextInputAction.done,
               validator: controller.validateEmployeeId,
@@ -237,18 +235,12 @@ class EmployeeFormScreen extends StatelessWidget {
               },
             ),
             const SizedBox(height: 12),
-            TextFormField(
+            CustomTextField(
               controller: controller.employeeNameController,
-              decoration: InputDecoration(
-                labelText: 'Employee Name *',
-                hintText: 'Auto-filled or enter manually',
-                prefixIcon:  Icon(Icons.person,color: colorController.darkColor,),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                filled: true,
-                fillColor: Colors.blue.shade50,
-              ),
+              labelText: 'Employee Name *',
+              hintText: 'Auto-filled or enter manually',
+              prefixIcon: Icons.person,
+              fillColor: Colors.blue.shade50,
               validator: (value) =>
                   controller.validateRequired(value, 'Employee Name'),
             ),
@@ -346,24 +338,22 @@ class EmployeeFormScreen extends StatelessWidget {
                       color: colorController.darkColor
                     ),
                   ),
+
+                ),
+                const Text(
+                  ' *',
+                  style: TextStyle(color: Colors.red, fontSize: 18),
                 ),
               ],
             ),
             const SizedBox(height: 16),
             Obx(
-              () => TextFormField(
+              () => CustomTextField(
                 controller: controller.spouseNameController,
-                decoration: InputDecoration(
-                  labelText: controller.selectedMaritalStatus.value == 'Married'
-                      ? 'Spouse Name *'
-                      : 'Spouse Name',
-                  prefixIcon:  Icon(Icons.person_outline,color: colorController.darkColor,),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey.shade50,
-                ),
+                labelText: controller.selectedMaritalStatus.value == 'Married'
+                    ? 'Spouse Name *'
+                    : 'Spouse Name',
+                prefixIcon: Icons.person_outline,
                 validator: (value) {
                   // Required only for Married status
                   if (controller.selectedMaritalStatus.value == 'Married') {
@@ -375,19 +365,12 @@ class EmployeeFormScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Obx(
-              () => TextFormField(
+              () => CustomTextField(
                 controller: controller.spouseOccupationController,
-                decoration: InputDecoration(
-                  labelText: controller.selectedMaritalStatus.value == 'Married'
-                      ? 'Spouse Occupation *'
-                      : 'Spouse Occupation',
-                  prefixIcon: Icon(Icons.work_outline,color: colorController.darkColor,),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey.shade50,
-                ),
+                labelText: controller.selectedMaritalStatus.value == 'Married'
+                    ? 'Spouse Occupation *'
+                    : 'Spouse Occupation',
+                prefixIcon: Icons.work_outline,
                 validator: (value) {
                   // Required only for Married status
                   if (controller.selectedMaritalStatus.value == 'Married') {
@@ -399,20 +382,13 @@ class EmployeeFormScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Obx(
-              () => TextFormField(
+              () => CustomTextField(
                 controller: controller.spouseDobController,
-                decoration: InputDecoration(
-                  labelText: controller.selectedMaritalStatus.value == 'Married'
-                      ? 'Spouse Date of Birth *'
-                      : 'Spouse Date of Birth',
-                  prefixIcon:  Icon(Icons.calendar_today,color: colorController.darkColor,),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey.shade50,
-                  hintText: 'DD/MM/YYYY',
-                ),
+                labelText: controller.selectedMaritalStatus.value == 'Married'
+                    ? 'Spouse Date of Birth *'
+                    : 'Spouse Date of Birth',
+                hintText: 'DD/MM/YYYY',
+                prefixIcon: Icons.calendar_today,
                 readOnly: true,
                 onTap: () => _selectDate(controller.spouseDobController),
                 validator: (value) {
@@ -425,17 +401,10 @@ class EmployeeFormScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            TextFormField(
-              decoration: InputDecoration(
-                labelText: 'Number of Children *',
-                prefixIcon:  Icon(Icons.child_care,color: colorController.darkColor,),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                filled: true,
-                fillColor: Colors.grey.shade50,
-                hintText: '0-99',
-              ),
+            CustomTextField(
+              labelText: 'Number of Children *',
+              hintText: '0-99',
+              prefixIcon: Icons.child_care,
               keyboardType: TextInputType.number,
               maxLength: 2,
               validator: controller.validateNumberOfChildren,
@@ -480,21 +449,18 @@ class EmployeeFormScreen extends StatelessWidget {
                             color: colorController.darkColor
                           ),
                         ),
+                        const Text(
+                          ' *',
+                          style: TextStyle(color: Colors.red, fontSize: 18),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 16),
-                    TextFormField(
+                    CustomTextField(
                       controller: controller.childrenControllers[index]['dob'],
-                      decoration: InputDecoration(
-                        labelText: 'Date of Birth *',
-                        prefixIcon:  Icon(Icons.calendar_today,color: colorController.darkColor,),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey.shade50,
-                        hintText: 'DD/MM/YYYY',
-                      ),
+                      labelText: 'Date of Birth *',
+                      hintText: 'DD/MM/YYYY',
+                      prefixIcon: Icons.calendar_today,
                       readOnly: true,
                       onTap: () => _selectDate(
                           controller.childrenControllers[index]['dob']!),
@@ -502,18 +468,11 @@ class EmployeeFormScreen extends StatelessWidget {
                           controller.validateRequired(value, 'Date of Birth'),
                     ),
                     const SizedBox(height: 12),
-                    TextFormField(
+                    CustomTextField(
                       controller:
                           controller.childrenControllers[index]['education'],
-                      decoration: InputDecoration(
-                        labelText: 'Education *',
-                        prefixIcon:  Icon(Icons.school,color: colorController.darkColor,),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey.shade50,
-                      ),
+                      labelText: 'Education *',
+                      prefixIcon: Icons.school,
                       validator: (value) =>
                           controller.validateRequired(value, 'Education'),
                     ),
@@ -521,11 +480,23 @@ class EmployeeFormScreen extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Gender *',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
+                        RichText(
+                          text: const TextSpan(
+                            text: 'Gender ',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: '*',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -595,17 +566,33 @@ class EmployeeFormScreen extends StatelessWidget {
                     color: colorController.darkColor
                   ),
                 ),
+                const Text(
+                  ' *',
+                  style: TextStyle(color: Colors.red, fontSize: 18),
+                ),
               ],
             ),
             const SizedBox(height: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Gender *',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                RichText(
+                  text: const TextSpan(
+                    text: 'Gender ',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: '*',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -642,53 +629,29 @@ class EmployeeFormScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            TextFormField(
+            CustomTextField(
               controller: controller.presentAddressController,
-              decoration: InputDecoration(
-                labelText: 'Present Address *',
-                hintText: 'Enter your present address',
-
-                prefixIcon:  Icon(Icons.home,color: colorController.darkColor,),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                filled: true,
-                fillColor: Colors.grey.shade50,
-              ),
-              maxLines: 1,
+              labelText: 'Present Address *',
+              hintText: 'Enter your present address',
+              prefixIcon: Icons.home,
               validator: (value) =>
                   controller.validateRequired(value, 'Present Address'),
             ),
             const SizedBox(height: 12),
-            TextFormField(
+            CustomTextField(
               controller: controller.permanentAddressController,
-              decoration: InputDecoration(
-                labelText: 'Permanent Address *',
-                hintText: 'Enter your permanent address',
-                prefixIcon:  Icon(Icons.location_on,color: colorController.darkColor,),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                filled: true,
-                fillColor: Colors.grey.shade50,
-              ),
-              maxLines: 1,
+              labelText: 'Permanent Address *',
+              hintText: 'Enter your permanent address',
+              prefixIcon: Icons.location_on,
               validator: (value) =>
                   controller.validateRequired(value, 'Permanent Address'),
             ),
             const SizedBox(height: 12),
-            TextFormField(
+            CustomTextField(
               controller: controller.educationController,
-              decoration: InputDecoration(
-                labelText: 'Education *',
-                hintText: 'Enter your education level',
-                prefixIcon:  Icon(Icons.school,color: colorController.darkColor,),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                filled: true,
-                fillColor: Colors.grey.shade50,
-              ),
+              labelText: 'Education *',
+              hintText: 'Enter your education level',
+              prefixIcon: Icons.school,
               validator: (value) =>
                   controller.validateRequired(value, 'Education'),
             ),
@@ -761,7 +724,7 @@ class EmployeeFormScreen extends StatelessWidget {
         ),
         title: Row(
           children: [
-            Icon(Icons.info_outline, color: Colors.blue.shade600, size: 28),
+            Icon(Icons.info_outline, color: colorController.primaryColor, size: 28),
             const SizedBox(width: 12),
             const Text(
               'Confirm Save',

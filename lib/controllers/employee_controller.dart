@@ -6,10 +6,12 @@ import '../models/child_model.dart';
 import '../services/api_service.dart';
 import '../services/session_service.dart';
 import '../config/api_config.dart';
+import 'color_controller.dart';
 
 class EmployeeController extends GetxController {
   final ApiService _apiService = ApiService();
   final SessionService _sessionService = SessionService();
+  final ColorController colorController = Get.find<ColorController>();
   final formKey = GlobalKey<FormState>();
 
   // Companies
@@ -309,7 +311,7 @@ class EmployeeController extends GetxController {
             ),
             title: Row(
               children: [
-                Icon(Icons.check_circle, color: Colors.teal.shade600, size: 28),
+                Icon(Icons.check_circle, color: colorController.primaryColor, size: 28),
                 const SizedBox(width: 12),
                 const Text(
                   'Success',
@@ -325,7 +327,7 @@ class EmployeeController extends GetxController {
               ElevatedButton(
                 onPressed: () => Get.back(),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal.shade600,
+                  backgroundColor: colorController.primaryColor,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),

@@ -61,17 +61,18 @@ class EmployeeModel {
       'TotalNoofChildred': children.length,
     };
 
-    // Add spouse information if married
+    // Add spouse information if married (send null for empty values)
     if (spouse != null) {
-      apiData['SpouseName'] = spouse!.name;
-      apiData['SpouseOccupation'] = spouse!.occupation;
-      apiData['SpouseEducation'] = spouse!.education;
-      apiData['SpouseDOB'] = spouse!.formatDateForApi(spouse!.dateOfBirth);
+      apiData['SpouseName'] = spouse!.name.trim().isEmpty ? null : spouse!.name;
+      apiData['SpouseOccupation'] = spouse!.occupation.trim().isEmpty ? null : spouse!.occupation;
+      apiData['SpouseEducation'] = spouse!.education.trim().isEmpty ? null : spouse!.education;
+      final formattedDate = spouse!.formatDateForApi(spouse!.dateOfBirth);
+      apiData['SpouseDOB'] = formattedDate.isEmpty ? null : formattedDate;
     } else {
-      apiData['SpouseName'] = '';
-      apiData['SpouseOccupation'] = '';
-      apiData['SpouseEducation'] = '';
-      apiData['SpouseDOB'] = '';
+      apiData['SpouseName'] = null;
+      apiData['SpouseOccupation'] = null;
+      apiData['SpouseEducation'] = null;
+      apiData['SpouseDOB'] = null;
     }
 
     // Add children information

@@ -25,7 +25,7 @@ class SpouseModel {
 
   // Helper method to format date to ISO 8601 format
   String formatDateForApi(String dateString) {
-    if (dateString.isEmpty) return '';
+    if (dateString.trim().isEmpty) return '';
 
     try {
       // Parse DD/MM/YYYY format
