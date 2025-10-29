@@ -727,14 +727,91 @@ class EmployeeFormScreen extends StatelessWidget {
             Icon(Icons.info_outline, color: colorController.primaryColor, size: 28),
             const SizedBox(width: 12),
             const Text(
-              'Confirm Save',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              'Confirm Employee Information',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
           ],
         ),
-        content: const Text(
-          'Are you sure you want to save this employee information?',
-          style: TextStyle(fontSize: 16),
+        content: SingleChildScrollView(
+          child: SizedBox(
+            width: double.maxFinite,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Please verify the information before saving:',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey.shade700,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _buildInfoSection('Company & Employee', [
+                  _buildInfoRow('Company', controller.selectedCompany.value),
+                  _buildInfoRow('Employee ID', controller.employeeIdController.text),
+                  _buildInfoRow('Employee Name', controller.employeeNameController.text),
+                ]),
+                const Divider(height: 24),
+                _buildInfoSection('Personal Details', [
+                  _buildInfoRow('Marital Status', controller.selectedMaritalStatus.value),
+                  _buildInfoRow('Gender', controller.selectedGender.value),
+                  _buildInfoRow('Present Address', controller.presentAddressController.text),
+                  _buildInfoRow('Permanent Address', controller.permanentAddressController.text),
+                  _buildInfoRow('Education', controller.educationController.text),
+                ]),
+                if (controller.selectedMaritalStatus.value.isNotEmpty &&
+                    controller.selectedMaritalStatus.value != 'Unmarried') ...[
+                  const Divider(height: 24),
+                  _buildInfoSection('Spouse Information', [
+                    _buildInfoRow('Spouse Name',
+                        controller.spouseNameController.text.isEmpty
+                            ? 'Not provided'
+                            : controller.spouseNameController.text),
+                    _buildInfoRow('Spouse Occupation',
+                        controller.spouseOccupationController.text.isEmpty
+                            ? 'Not provided'
+                            : controller.spouseOccupationController.text),
+                    _buildInfoRow('Spouse DOB',
+                        controller.spouseDobController.text.isEmpty
+                            ? 'Not provided'
+                            : controller.spouseDobController.text),
+                    _buildInfoRow('Number of Children',
+                        controller.numberOfChildren.value.toString()),
+                  ]),
+                ],
+                if (controller.numberOfChildren.value > 0) ...[
+                  const Divider(height: 24),
+                  _buildInfoSection('Children Information',
+                      List.generate(controller.numberOfChildren.value, (index) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (index > 0) const SizedBox(height: 12),
+                            Text(
+                              'Child ${index + 1}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: colorController.darkColor,
+                                fontSize: 13,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            _buildInfoRow('Date of Birth',
+                                controller.childrenControllers[index]['dob']!.text),
+                            _buildInfoRow('Education',
+                                controller.childrenControllers[index]['education']!.text),
+                            _buildInfoRow('Gender',
+                                controller.childrenGenders[index]),
+                          ],
+                        );
+                      }),
+                  ),
+                ],
+              ],
+            ),
+          ),
         ),
         actions: [
           TextButton(
@@ -770,7 +847,7 @@ class EmployeeFormScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             ),
             child: const Text(
-              'Confirm',
+              'Confirm & Save',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -780,6 +857,59 @@ class EmployeeFormScreen extends StatelessWidget {
         ],
       ),
       barrierDismissible: false,
+    );
+  }
+
+  Widget _buildInfoSection(String title, List<Widget> children) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            color: colorController.darkColor,
+          ),
+        ),
+        const SizedBox(height: 8),
+        ...children,
+      ],
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    final displayValue = value.trim().isEmpty ? 'Not provided' : value;
+    final isNotProvided = value.trim().isEmpty;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 150,
+            child: Text(
+              '$label:',
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.grey.shade700,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              displayValue,
+              style: TextStyle(
+                fontSize: 13,
+                color: isNotProvided ? Colors.grey.shade500 : Colors.black87,
+                fontStyle: isNotProvided ? FontStyle.italic : FontStyle.normal,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
