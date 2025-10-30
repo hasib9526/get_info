@@ -55,14 +55,21 @@ class _SplashScreenState extends State<SplashScreen>
     await Future.delayed(const Duration(seconds: 3));
 
     if (mounted) {
+      // Login system disabled - routing directly to Employee Form Screen
+      // Initialize AuthController (required for drawer) but don't use for authentication
       final authController = Get.put(AuthController());
-      await authController.checkAuthStatus();
 
-      if (authController.isAuthenticated.value) {
-        Get.offAll(() => EmployeeFormScreen());
-      } else {
-        Get.offAll(() => LoginScreen());
-      }
+      // Uncomment below code to enable login system again
+      // await authController.checkAuthStatus();
+
+      // if (authController.isAuthenticated.value) {
+      //   Get.offAll(() => EmployeeFormScreen());
+      // } else {
+      //   Get.offAll(() => LoginScreen());
+      // }
+
+      // Direct route to Employee Form Screen (login bypassed)
+      Get.offAll(() => EmployeeFormScreen());
     }
   }
 

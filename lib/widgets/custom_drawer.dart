@@ -20,7 +20,9 @@ class CustomDrawer extends StatelessWidget {
     return Drawer(
       child: Column(
         children: [
-          // Drawer Header
+          // Drawer Header - COMMENTED OUT (Login system disabled)
+          // Uncomment below section to show user account header again
+          /*
           Obx(
             () {
               // Decode Base64 image
@@ -86,13 +88,58 @@ class CustomDrawer extends StatelessWidget {
               );
             },
           ),
+          */
 
-          // User Info Section
+          // Simple Header (when login is disabled)
+          Obx(
+            () => Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(16, 50, 16, 16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [colorController.darkColor, colorController.primaryColor],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(
+                    Icons.settings,
+                    size: 48,
+                    color: Colors.white,
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Settings',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Customize your app',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.8),
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // User Info Section - COMMENTED OUT (Login system disabled)
+          // Uncomment below section to show user information again
           Expanded(
             child: SingleChildScrollView(
               child: Column(
                 children: [
                   const SizedBox(height: 8),
+                  /*
                   Obx(
                     () => _buildInfoTile(
                       icon: Icons.badge,
@@ -122,14 +169,17 @@ class CustomDrawer extends StatelessWidget {
                       subtitle: authController.displayDepartment,
                     ),
                   ),
+                  */
 
 
-                  // Color Selector Section
+                  // Color Selector Section - ACTIVE
                   _buildColorSelector(),
 
 
 
-                  // Logout Button
+                  // Logout Button - COMMENTED OUT (Login system disabled)
+                  // Uncomment below section to show logout button again
+                  /*
                   ListTile(
                     leading: Icon(
                       Icons.logout,
@@ -146,12 +196,15 @@ class CustomDrawer extends StatelessWidget {
                       _showLogoutDialog(context);
                     },
                   ),
+                  */
                 ],
               ),
             ),
           ),
 
-          // App Version
+          // App Version - COMMENTED OUT
+          // Uncomment below section to show app version again
+          /*
           Container(
             padding: const EdgeInsets.all(16),
             child: Text(
@@ -162,6 +215,7 @@ class CustomDrawer extends StatelessWidget {
               ),
             ),
           ),
+          */
         ],
       ),
     );

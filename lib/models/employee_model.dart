@@ -50,6 +50,7 @@ class EmployeeModel {
     final Map<String, dynamic> apiData = {
       'EmployeeID': employeeId,
       'Factory': ApiConfig.getFactoryCode(company),
+      'Name': employeeName, // Employee Name field added
       'MaritalStatus': maritalStatus,
       'Gender': gender,
       'PresentAddress': presentAddress,

@@ -10,6 +10,7 @@ class ApiConfig {
   // Employee Endpoints
   static const String getEmployeeEndpoint = '/WorkerSurveyMaster/GetEmployee';
   static const String saveToBISEndpoint = '/WorkerSurveyMaster/ToBIS';
+  static const String checkEmployeeExistsEndpoint = '/WorkerSurveyMaster/CheckEmployeeExists';
 
   // Full URLs
   static String get loginUrl => '$baseUrl$loginEndpoint';
@@ -17,6 +18,7 @@ class ApiConfig {
   static String get logoutUrl => '$baseUrl$logoutEndpoint';
   static String get getEmployeeUrl => '$baseUrl$getEmployeeEndpoint';
   static String get saveToBISUrl => '$baseUrl$saveToBISEndpoint';
+  static String get checkEmployeeExistsUrl => '$baseUrl$checkEmployeeExistsEndpoint';
 
   // Timeout
   static const Duration connectionTimeout = Duration(seconds: 30);

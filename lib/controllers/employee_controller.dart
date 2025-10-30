@@ -287,10 +287,16 @@ class EmployeeController extends GetxController {
         education: educationController.text,
       );
 
-      // Get logged-in user name for AddedBy field
-      final addedBy = await _sessionService.getEmployeeName() ??
-                      await _sessionService.getUserName() ??
-                      'Unknown';
+      // Get AddedBy field - using Employee Name instead of logged-in user
+      // Uncomment below lines to use logged-in user name again:
+      // final addedBy = await _sessionService.getEmployeeName() ??
+      //                 await _sessionService.getUserName() ??
+      //                 'Unknown';
+
+      // Using employee name from form as AddedBy
+      final addedBy = employeeNameController.text.trim().isNotEmpty
+                      ? employeeNameController.text.trim()
+                      : 'Unknown';
 
       // Call API to save employee data
       final success = await _apiService.saveToBIS(
