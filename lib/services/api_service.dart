@@ -106,6 +106,132 @@ class ApiService {
     }
   }
 
+  // Check if Employee already exists in database
+  Future<bool> checkEmployeeExists({
+    required String employeeId,
+    required String factory,
+  }) async {
+    try {
+      final uri = Uri.parse(ApiConfig.getEmpUrl);
+
+      print('🔍 API Request: GetEmp - EmployeeID: $employeeId, Factory: $factory');
+
+      // Make POST request
+      final response = await http.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'EmployeeID': employeeId,
+          'Factory': factory,
+        }),
+      ).timeout(ApiConfig.connectionTimeout);
+
+      print('🔍 API Response Status: ${response.statusCode}');
+      print('🔍 API Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final responseBody = response.body.trim();
+
+        // If response is null, empty, or "null", employee doesn't exist
+        if (responseBody.isEmpty ||
+            responseBody == 'null' ||
+            responseBody == '{}') {
+          print('✅ API: Employee does not exist');
+          return false;
+        }
+
+        // Try to parse the response
+        try {
+          final jsonData = json.decode(responseBody);
+
+          // If we get valid data with an ID, employee exists
+          if (jsonData != null && jsonData['ID'] != null) {
+            print('⚠️ API: Employee already exists with ID: ${jsonData['ID']}');
+            return true;
+          }
+        } catch (e) {
+          print('✅ API: Employee does not exist (parse error)');
+          return false;
+        }
+
+        return false;
+      } else {
+        print('✅ API: Employee does not exist (non-200 status)');
+        return false;
+      }
+    } catch (e) {
+      print('❌ API Error: $e');
+      // If there's an error, assume employee doesn't exist (allow save)
+      return false;
+    }
+  }
+
+  // Check if Employee exists and return full data if found
+  Future<Map<String, dynamic>?> checkEmployeeExistsWithData({
+    required String employeeId,
+    required String factory,
+  }) async {
+    try {
+      final uri = Uri.parse(ApiConfig.getEmpUrl);
+
+      print('🔍 API Request: GetEmp (with data) - EmployeeID: $employeeId, Factory: $factory');
+
+      // Make POST request
+      final response = await http.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: json.encode({
+          'EmployeeID': employeeId,
+          'Factory': factory,
+        }),
+      ).timeout(ApiConfig.connectionTimeout);
+
+      print('🔍 API Response Status: ${response.statusCode}');
+      print('🔍 API Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final responseBody = response.body.trim();
+
+        // If response is null, empty, or "null", employee doesn't exist
+        if (responseBody.isEmpty ||
+            responseBody == 'null' ||
+            responseBody == '{}') {
+          print('✅ API: Employee does not exist');
+          return null;
+        }
+
+        // Try to parse the response
+        try {
+          final jsonData = json.decode(responseBody);
+
+          // If we get valid data with an ID, return the full data
+          if (jsonData != null && jsonData['ID'] != null) {
+            print('✅ API: Employee data retrieved successfully');
+            return jsonData as Map<String, dynamic>;
+          }
+        } catch (e) {
+          print('✅ API: Employee does not exist (parse error)');
+          return null;
+        }
+
+        return null;
+      } else {
+        print('✅ API: Employee does not exist (non-200 status)');
+        return null;
+      }
+    } catch (e) {
+      print('❌ API Error: $e');
+      // If there's an error, return null (no data)
+      return null;
+    }
+  }
+
   // Save Employee Data to BIS
   Future<bool> saveToBIS({
     required EmployeeModel employee,

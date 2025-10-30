@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../models/employee_model.dart';
 import '../models/spouse_model.dart';
 import '../models/child_model.dart';
@@ -44,12 +45,55 @@ class EmployeeController extends GetxController {
   final selectedGender = ''.obs;
   final presentAddressController = TextEditingController();
   final permanentAddressController = TextEditingController();
-  final educationController = TextEditingController();
+
+  // Employee Education options
+  final List<String> employeeEducationOptions = [
+    'No Education',
+    'Primary School',
+    'Secondary School',
+    'PSC',
+    'JSC',
+    'SSC',
+    'HSC',
+    'Diploma',
+    'Bachelor Degree',
+    'Masters Degree',
+    'PhD',
+  ];
+  final selectedEducation = ''.obs;
+
+  // Children Education options
+  final List<String> childEducationOptions = [
+    'No Education',
+    'Nursery',
+    'Play',
+    'KG',
+    'Class 1',
+    'Class 2',
+    'Class 3',
+    'Class 4',
+    'Class 5',
+    'Class 6',
+    'Class 7',
+    'Class 8',
+    'Class 9',
+    'Class 10',
+    'Class 11',
+    'Class 12',
+    'SSC',
+    'HSC',
+    'Diploma',
+    'Bachelor Degree',
+    'Masters Degree',
+  ];
+
+  final educationController = TextEditingController(); // Kept for backward compatibility
 
   // Children info
   final RxList<Map<String, TextEditingController>> childrenControllers =
       <Map<String, TextEditingController>>[].obs;
   final RxList<String> childrenGenders = <String>[].obs;
+  final RxList<String> childrenEducations = <String>[].obs; // Selected education for each child
 
   // Counter for total entries
   final totalEntries = 0.obs;
@@ -59,6 +103,9 @@ class EmployeeController extends GetxController {
 
   // Loading state
   final isLoading = false.obs;
+
+  // View mode - true if viewing existing data (cannot save)
+  final isViewingExistingData = false.obs;
 
   @override
   void onInit() {
@@ -122,7 +169,7 @@ class EmployeeController extends GetxController {
       // Get factory code from selected company
       final factoryCode = ApiConfig.getFactoryCode(selectedCompany.value);
 
-      // Call API to get employee name
+      // Call API to get employee name only
       final employeeName = await _apiService.getEmployee(
         employeeId: employeeId,
         factory: factoryCode,
@@ -130,6 +177,122 @@ class EmployeeController extends GetxController {
 
       if (employeeName != null && employeeName.isNotEmpty) {
         employeeNameController.text = employeeName;
+
+        // Check if data already exists in backend
+        final dataExists = await _apiService.checkEmployeeExists(
+          employeeId: employeeId,
+          factory: factoryCode,
+        );
+
+        if (dataExists) {
+          // Show dialog that data already exists
+          Get.dialog(
+            AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              title: Row(
+                children: [
+                  Icon(Icons.info_outline, color: Colors.blue.shade700, size: 28),
+                  const SizedBox(width: 12),
+                  const Text(
+                    'Data Already Exists',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'This employee data already exists in the backend database.',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.blue.shade200),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.person, color: Colors.blue.shade700, size: 20),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Employee: $employeeName',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.blue.shade900,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Icon(Icons.badge, color: Colors.blue.shade700, size: 20),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'ID: $employeeId',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.blue.shade900,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'You cannot save duplicate data for this employee.',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey.shade700,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () {
+                    Get.back();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colorController.primaryColor,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  ),
+                  child: const Text(
+                    'OK',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            barrierDismissible: true,
+          );
+        }
       } else {
         employeeNameController.text = '';
         Get.snackbar(
@@ -161,6 +324,7 @@ class EmployeeController extends GetxController {
 
     childrenControllers.clear();
     childrenGenders.clear();
+    childrenEducations.clear();
 
     // Create new controllers for each child
     for (int i = 0; i < count; i++) {
@@ -169,7 +333,12 @@ class EmployeeController extends GetxController {
         'education': TextEditingController(),
       });
       childrenGenders.add('');
+      childrenEducations.add(''); // Initialize education selection
     }
+  }
+
+  void updateChildEducation(int index, String education) {
+    childrenEducations[index] = education;
   }
 
   void updateChildGender(int index, String gender) {
@@ -212,13 +381,34 @@ class EmployeeController extends GetxController {
         return false;
       }
 
-      // Validate children genders if married with children
+      if (selectedEducation.value.isEmpty) {
+        Get.snackbar(
+          'Validation Error',
+          'Please select education',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red.shade100,
+          colorText: Colors.red.shade900,
+        );
+        return false;
+      }
+
+      // Validate children genders and education if married with children
       if (selectedMaritalStatus.value == 'Married' && numberOfChildren.value > 0) {
         for (int i = 0; i < childrenGenders.length; i++) {
           if (childrenGenders[i].isEmpty) {
             Get.snackbar(
               'Validation Error',
               'Please select gender for Child ${i + 1}',
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Colors.red.shade100,
+              colorText: Colors.red.shade900,
+            );
+            return false;
+          }
+          if (childrenEducations[i].isEmpty) {
+            Get.snackbar(
+              'Validation Error',
+              'Please select education for Child ${i + 1}',
               snackPosition: SnackPosition.BOTTOM,
               backgroundColor: Colors.red.shade100,
               colorText: Colors.red.shade900,
@@ -240,6 +430,94 @@ class EmployeeController extends GetxController {
     isLoading.value = true;
 
     try {
+      // Check if employee already exists in database
+      final factoryCode = ApiConfig.getFactoryCode(selectedCompany.value);
+      final employeeExists = await _apiService.checkEmployeeExists(
+        employeeId: employeeIdController.text.trim(),
+        factory: factoryCode,
+      );
+
+      if (employeeExists) {
+        // Stop loading
+        isLoading.value = false;
+
+        // Show dialog that employee already exists
+        Get.dialog(
+          AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Row(
+              children: [
+                Icon(Icons.warning_amber_rounded, color: Colors.orange.shade700, size: 28),
+                const SizedBox(width: 12),
+                const Text(
+                  'Already Added',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'This employee data has already been added to the database.',
+                  style: TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.orange.shade200),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline, color: Colors.orange.shade700, size: 20),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Employee ID: ${employeeIdController.text}',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.orange.shade900,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () => Get.back(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colorController.primaryColor,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+                child: const Text(
+                  'OK',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          barrierDismissible: false,
+        );
+        return; // Exit without saving
+      }
+
       // Create spouse model if not unmarried (for Married, Divorced, Widow, Separated)
       SpouseModel? spouse;
       if (selectedMaritalStatus.value.isNotEmpty &&
@@ -268,7 +546,7 @@ class EmployeeController extends GetxController {
       for (int i = 0; i < childrenControllers.length; i++) {
         children.add(ChildModel(
           dateOfBirth: childrenControllers[i]['dob']!.text,
-          education: childrenControllers[i]['education']!.text,
+          education: childrenEducations[i], // Using selected education dropdown
           gender: childrenGenders[i],
         ));
       }
@@ -284,7 +562,7 @@ class EmployeeController extends GetxController {
         gender: selectedGender.value,
         presentAddress: presentAddressController.text,
         permanentAddress: permanentAddressController.text,
-        education: educationController.text,
+        education: selectedEducation.value, // Using selected education dropdown
       );
 
       // Get AddedBy field - using Employee Name instead of logged-in user
@@ -381,6 +659,7 @@ class EmployeeController extends GetxController {
     selectedMaritalStatus.value = '';
     numberOfChildren.value = 0;
     selectedGender.value = '';
+    selectedEducation.value = '';
 
     // Clear children controllers
     for (var controllers in childrenControllers) {
@@ -389,6 +668,7 @@ class EmployeeController extends GetxController {
     }
     childrenControllers.clear();
     childrenGenders.clear();
+    childrenEducations.clear();
 
     // Clear text controllers (except employee ID and name)
     spouseNameController.clear();

@@ -47,36 +47,36 @@ class EmployeeFormScreen extends StatelessWidget {
               ),
             ),
           ),
-        actions: [
-          Obx(
-            () => Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              margin: const EdgeInsets.only(right: 16),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.people,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    'Total: ${controller.totalEntries.value}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+        // actions: [
+        //   Obx(
+        //     () => Container(
+        //       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        //       margin: const EdgeInsets.only(right: 16),
+        //       decoration: BoxDecoration(
+        //         color: Colors.white.withOpacity(0.2),
+        //         borderRadius: BorderRadius.circular(20),
+        //       ),
+        //       child: Row(
+        //         children: [
+        //           const Icon(
+        //             Icons.people,
+        //             color: Colors.white,
+        //             size: 20,
+        //           ),
+        //           const SizedBox(width: 6),
+        //           Text(
+        //             'Total: ${controller.totalEntries.value}',
+        //             style: const TextStyle(
+        //               color: Colors.white,
+        //               fontWeight: FontWeight.bold,
+        //               fontSize: 14,
+        //             ),
+        //           ),
+        //         ],
+        //       ),
+        //     ),
+        //   ),
+        // ],
       ),
       body: GestureDetector(
         onTap: () {
@@ -468,15 +468,41 @@ class EmployeeFormScreen extends StatelessWidget {
                           controller.validateRequired(value, 'Date of Birth'),
                     ),
                     const SizedBox(height: 12),
-                    CustomTextField(
-                      controller:
-                          controller.childrenControllers[index]['education'],
-                      labelText: 'Education *',
-                      prefixIcon: Icons.school,
-                      validator: (value) =>
-                          controller.validateRequired(value, 'Education'),
+                    Obx(
+                      () => DropdownButtonFormField<String>(
+                        value: controller.childrenEducations[index].isEmpty
+                            ? null
+                            : controller.childrenEducations[index],
+                        decoration: InputDecoration(
+                          labelText: 'Education *',
+                          prefixIcon: Icon(Icons.school, color: colorController.primaryColor),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                        ),
+                        hint: const Text('Select education level'),
+                        items: controller.childEducationOptions.map((education) {
+                          return DropdownMenuItem<String>(
+                            value: education,
+                            child: Text(education),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          if (value != null) {
+                            controller.updateChildEducation(index, value);
+                          }
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please select education';
+                          }
+                          return null;
+                        },
+                      ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -647,13 +673,39 @@ class EmployeeFormScreen extends StatelessWidget {
                   controller.validateRequired(value, 'Permanent Address'),
             ),
             const SizedBox(height: 12),
-            CustomTextField(
-              controller: controller.educationController,
-              labelText: 'Education *',
-              hintText: 'Enter your education level',
-              prefixIcon: Icons.school,
-              validator: (value) =>
-                  controller.validateRequired(value, 'Education'),
+            Obx(
+              () => DropdownButtonFormField<String>(
+                value: controller.selectedEducation.value.isEmpty
+                    ? null
+                    : controller.selectedEducation.value,
+                decoration: InputDecoration(
+                  labelText: 'Education *',
+                  prefixIcon: Icon(Icons.school, color: colorController.primaryColor),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                hint: const Text('Select education level'),
+                items: controller.employeeEducationOptions.map((education) {
+                  return DropdownMenuItem<String>(
+                    value: education,
+                    child: Text(education),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    controller.selectedEducation.value = value;
+                  }
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please select education';
+                  }
+                  return null;
+                },
+              ),
             ),
           ],
         ),
@@ -759,7 +811,7 @@ class EmployeeFormScreen extends StatelessWidget {
                   _buildInfoRow('Gender', controller.selectedGender.value),
                   _buildInfoRow('Present Address', controller.presentAddressController.text),
                   _buildInfoRow('Permanent Address', controller.permanentAddressController.text),
-                  _buildInfoRow('Education', controller.educationController.text),
+                  _buildInfoRow('Education', controller.selectedEducation.value),
                 ]),
                 if (controller.selectedMaritalStatus.value.isNotEmpty &&
                     controller.selectedMaritalStatus.value != 'Unmarried') ...[
@@ -801,7 +853,7 @@ class EmployeeFormScreen extends StatelessWidget {
                             _buildInfoRow('Date of Birth',
                                 controller.childrenControllers[index]['dob']!.text),
                             _buildInfoRow('Education',
-                                controller.childrenControllers[index]['education']!.text),
+                                controller.childrenEducations[index]),
                             _buildInfoRow('Gender',
                                 controller.childrenGenders[index]),
                           ],
