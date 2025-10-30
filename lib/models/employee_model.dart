@@ -13,6 +13,7 @@ class EmployeeModel {
   String presentAddress;
   String permanentAddress;
   String education;
+  bool isMobileUser;
 
   EmployeeModel({
     this.company = '',
@@ -25,6 +26,7 @@ class EmployeeModel {
     this.presentAddress = '',
     this.permanentAddress = '',
     this.education = '',
+    this.isMobileUser = false,
   });
 
   Map<String, dynamic> toJson() {
@@ -39,6 +41,7 @@ class EmployeeModel {
       'presentAddress': presentAddress,
       'permanentAddress': permanentAddress,
       'education': education,
+      'isMobileUser': isMobileUser,
     };
   }
 
@@ -56,7 +59,7 @@ class EmployeeModel {
       'PresentAddress': presentAddress,
       'PermanentAddress': permanentAddress,
       'Education': education,
-      'IsMobileUser': true,
+      'IsMobileUser': isMobileUser,
       'AddedBy': addedBy,
       'DateAdded': dateAdded,
       'TotalNoofChildred': children.length,
@@ -104,6 +107,7 @@ class EmployeeModel {
       presentAddress: json['presentAddress'] ?? '',
       permanentAddress: json['permanentAddress'] ?? '',
       education: json['education'] ?? '',
+      isMobileUser: json['isMobileUser'] ?? false,
     );
   }
 
@@ -118,6 +122,7 @@ class EmployeeModel {
     String? presentAddress,
     String? permanentAddress,
     String? education,
+    bool? isMobileUser,
   }) {
     return EmployeeModel(
       company: company ?? this.company,
@@ -130,6 +135,7 @@ class EmployeeModel {
       presentAddress: presentAddress ?? this.presentAddress,
       permanentAddress: permanentAddress ?? this.permanentAddress,
       education: education ?? this.education,
+      isMobileUser: isMobileUser ?? this.isMobileUser,
     );
   }
 }

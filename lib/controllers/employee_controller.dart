@@ -25,7 +25,7 @@ class EmployeeController extends GetxController {
   final employeeIdFocusNode = FocusNode();
 
   // Marital status
-  final maritalStatuses = ['Married', 'Unmarried', 'Divorced', 'Widow','Separated'];
+  final maritalStatuses = ['Married', 'Unmarried', 'Divorced', 'Widowed','Separated'];
   final selectedMaritalStatus = ''.obs;
 
   // Spouse info
@@ -38,9 +38,8 @@ class EmployeeController extends GetxController {
   final List<String> genders = [
     'Male',
     'Female',
+    'Common',
     'Transgender',
-    'Non-binary',
-    'Others'
   ];
   final selectedGender = ''.obs;
   final presentAddressController = TextEditingController();
@@ -61,6 +60,13 @@ class EmployeeController extends GetxController {
     'PhD',
   ];
   final selectedEducation = ''.obs;
+
+  // Mobile User options
+  final List<String> mobileUserOptions = ['Yes', 'No'];
+  final selectedMobileUser = ''.obs;
+
+  // Spouse Education - using same options as employee education
+  final selectedSpouseEducation = ''.obs;
 
   // Children Education options
   final List<String> childEducationOptions = [
@@ -122,6 +128,7 @@ class EmployeeController extends GetxController {
         spouseNameController.clear();
         spouseOccupationController.clear();
         spouseDobController.clear();
+        selectedSpouseEducation.value = '';
         numberOfChildren.value = 0;
       }
     });
@@ -196,8 +203,9 @@ class EmployeeController extends GetxController {
                   Icon(Icons.info_outline, color: Colors.blue.shade700, size: 28),
                   const SizedBox(width: 12),
                   const Text(
-                    'Data Already Exists',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    'Data Already Exists\nডেটা ইতিমধ্যে বিদ্যমান',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                 ],
               ),
@@ -206,8 +214,8 @@ class EmployeeController extends GetxController {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'This employee data already exists in the backend database.',
-                    style: TextStyle(fontSize: 16),
+                    'This employee data already exists in the backend database.\n\nএই কর্মচারীর তথ্য ইতিমধ্যে ডাটাবেসে রয়েছে।',
+                    style: TextStyle(fontSize: 14),
                   ),
                   const SizedBox(height: 12),
                   Container(
@@ -226,9 +234,9 @@ class EmployeeController extends GetxController {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                'Employee: $employeeName',
+                                'Employee / কর্মচারী: $employeeName',
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 13,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.blue.shade900,
                                 ),
@@ -243,9 +251,9 @@ class EmployeeController extends GetxController {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                'ID: $employeeId',
+                                'ID / আইডি: $employeeId',
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 13,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.blue.shade900,
                                 ),
@@ -258,9 +266,9 @@ class EmployeeController extends GetxController {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'You cannot save duplicate data for this employee.',
+                    'You cannot save duplicate data for this employee.\nএই কর্মচারীর জন্য আবার ডেটা সংরক্ষণ করতে পারবেন না।',
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 12,
                       color: Colors.grey.shade700,
                       fontStyle: FontStyle.italic,
                     ),
@@ -270,7 +278,7 @@ class EmployeeController extends GetxController {
               actions: [
                 ElevatedButton(
                   onPressed: () {
-                    Get.back();
+                    Navigator.of(Get.overlayContext!).pop();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorController.primaryColor,
@@ -290,7 +298,7 @@ class EmployeeController extends GetxController {
                 ),
               ],
             ),
-            barrierDismissible: true,
+            barrierDismissible: false,
           );
         }
       } else {
@@ -392,6 +400,29 @@ class EmployeeController extends GetxController {
         return false;
       }
 
+      if (selectedMobileUser.value.isEmpty) {
+        Get.snackbar(
+          'Validation Error',
+          'Please select mobile user',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red.shade100,
+          colorText: Colors.red.shade900,
+        );
+        return false;
+      }
+
+      // Validate spouse education for Married status
+      if (selectedMaritalStatus.value == 'Married' && selectedSpouseEducation.value.isEmpty) {
+        Get.snackbar(
+          'Validation Error',
+          'Please select spouse education',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red.shade100,
+          colorText: Colors.red.shade900,
+        );
+        return false;
+      }
+
       // Validate children genders and education if married with children
       if (selectedMaritalStatus.value == 'Married' && numberOfChildren.value > 0) {
         for (int i = 0; i < childrenGenders.length; i++) {
@@ -452,8 +483,9 @@ class EmployeeController extends GetxController {
                 Icon(Icons.warning_amber_rounded, color: Colors.orange.shade700, size: 28),
                 const SizedBox(width: 12),
                 const Text(
-                  'Already Added',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  'Already Added\nইতিমধ্যে যুক্ত হয়েছে',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
               ],
             ),
@@ -462,8 +494,8 @@ class EmployeeController extends GetxController {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'This employee data has already been added to the database.',
-                  style: TextStyle(fontSize: 16),
+                  'This employee data has already been added to the database.\n\nএই কর্মচারীর তথ্য ইতিমধ্যে ডাটাবেসে যুক্ত হয়েছে।',
+                  style: TextStyle(fontSize: 14),
                 ),
                 const SizedBox(height: 12),
                 Container(
@@ -479,9 +511,9 @@ class EmployeeController extends GetxController {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Employee ID: ${employeeIdController.text}',
+                          'Employee ID / কর্মচারী আইডি: ${employeeIdController.text}',
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 13,
                             fontWeight: FontWeight.w600,
                             color: Colors.orange.shade900,
                           ),
@@ -494,7 +526,9 @@ class EmployeeController extends GetxController {
             ),
             actions: [
               ElevatedButton(
-                onPressed: () => Get.back(),
+                onPressed: () {
+                  Navigator.of(Get.overlayContext!).pop();
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: colorController.primaryColor,
                   foregroundColor: Colors.white,
@@ -526,7 +560,8 @@ class EmployeeController extends GetxController {
         // Check if any spouse field has data
         bool hasSpouseData = spouseNameController.text.trim().isNotEmpty ||
                              spouseOccupationController.text.trim().isNotEmpty ||
-                             spouseDobController.text.trim().isNotEmpty;
+                             spouseDobController.text.trim().isNotEmpty ||
+                             selectedSpouseEducation.value.isNotEmpty;
 
         // Only create spouse model if at least one field is filled
         // OR if marital status is Married (required)
@@ -536,7 +571,7 @@ class EmployeeController extends GetxController {
             occupation: spouseOccupationController.text,
             dateOfBirth: spouseDobController.text,
             numberOfChildren: numberOfChildren.value,
-            education: '', // Spouse education not collected in UI, default to empty
+            education: selectedSpouseEducation.value,
           );
         }
       }
@@ -563,6 +598,7 @@ class EmployeeController extends GetxController {
         presentAddress: presentAddressController.text,
         permanentAddress: permanentAddressController.text,
         education: selectedEducation.value, // Using selected education dropdown
+        isMobileUser: selectedMobileUser.value == 'Yes',
       );
 
       // Get AddedBy field - using Employee Name instead of logged-in user
@@ -609,7 +645,9 @@ class EmployeeController extends GetxController {
             ),
             actions: [
               ElevatedButton(
-                onPressed: () => Get.back(),
+                onPressed: () {
+                  Navigator.of(Get.overlayContext!).pop();
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: colorController.primaryColor,
                   foregroundColor: Colors.white,
@@ -660,6 +698,8 @@ class EmployeeController extends GetxController {
     numberOfChildren.value = 0;
     selectedGender.value = '';
     selectedEducation.value = '';
+    selectedMobileUser.value = '';
+    selectedSpouseEducation.value = '';
 
     // Clear children controllers
     for (var controllers in childrenControllers) {

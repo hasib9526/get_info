@@ -29,10 +29,12 @@ class EmployeeFormScreen extends StatelessWidget {
             ),
           ),
           title: const Text(
-            'Employee Information Entry',
+            'Employee Information Entry\nকর্মচারী তথ্য এন্ট্রি',
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.white,
+              fontSize: 14,
             ),
           ),
           centerTitle: true,
@@ -139,19 +141,21 @@ class EmployeeFormScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.business, color: colorController.darkColor),
-                const SizedBox(width: 8),
-                Text(
-                  'Select Company',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: colorController.darkColor,
+                Icon(Icons.business, color: colorController.darkColor, size: 22),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    'Select Company / কোম্পানি নির্বাচন করুন',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: colorController.darkColor,
+                    ),
                   ),
                 ),
                 const Text(
-                  ' *',
-                  style: TextStyle(color: Colors.red, fontSize: 18),
+                  '*',
+                  style: TextStyle(color: Colors.red, fontSize: 16),
                 ),
               ],
             ),
@@ -202,19 +206,21 @@ class EmployeeFormScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.badge, color: colorController.darkColor),
-                const SizedBox(width: 8),
-                Text(
-                  'Employee Information',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: colorController.darkColor
+                Icon(Icons.badge, color: colorController.darkColor, size: 22),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    'Employee Information / কর্মচারী তথ্য',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: colorController.darkColor
+                    ),
                   ),
                 ),
                 const Text(
-                  ' *',
-                  style: TextStyle(color: Colors.red, fontSize: 18),
+                  '*',
+                  style: TextStyle(color: Colors.red, fontSize: 16),
                 ),
               ],
             ),
@@ -222,8 +228,8 @@ class EmployeeFormScreen extends StatelessWidget {
             CustomTextField(
               controller: controller.employeeIdController,
               focusNode: controller.employeeIdFocusNode,
-              labelText: 'Employee ID *',
-              hintText: 'Enter employee ID',
+              labelText: 'Employee ID / কর্মচারী আইডি *',
+              hintText: 'Enter employee ID / আইডি লিখুন',
               prefixIcon: Icons.numbers,
               keyboardType: TextInputType.text,
               textInputAction: TextInputAction.done,
@@ -237,8 +243,8 @@ class EmployeeFormScreen extends StatelessWidget {
             const SizedBox(height: 12),
             CustomTextField(
               controller: controller.employeeNameController,
-              labelText: 'Employee Name *',
-              hintText: 'Auto-filled or enter manually',
+              labelText: 'Employee Name / কর্মচারী নাম *',
+              hintText: 'Auto-filled / অটো-ফিল হবে',
               prefixIcon: Icons.person,
               fillColor: Colors.blue.shade50,
               validator: (value) =>
@@ -261,51 +267,68 @@ class EmployeeFormScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.favorite, color: colorController.darkColor),
-                const SizedBox(width: 8),
-                 Text(
-                  'Marital Status',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: colorController.darkColor
+                Icon(Icons.favorite, color: colorController.darkColor, size: 22),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    'Marital Status / বৈবাহিক অবস্থা',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: colorController.darkColor
+                    ),
                   ),
                 ),
                 const Text(
-                  ' *',
-                  style: TextStyle(color: Colors.red, fontSize: 18),
+                  '*',
+                  style: TextStyle(color: Colors.red, fontSize: 16),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             Obx(
-              () => Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: controller.maritalStatuses.map((status) {
-                  final isSelected =
-                      controller.selectedMaritalStatus.value == status;
-                  return ChoiceChip(
-                    label: Text(
-                      status,
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.black87,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    selected: isSelected,
-                    selectedColor: colorController.darkColor,
-                    backgroundColor: Colors.grey.shade200,
-                    checkmarkColor: Colors.white,
-                    onSelected: (selected) {
-                      controller.selectedMaritalStatus.value = status;
-                    },
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
+              () => DropdownButtonFormField<String>(
+                value: controller.selectedMaritalStatus.value.isEmpty
+                    ? null
+                    : controller.selectedMaritalStatus.value,
+                decoration: InputDecoration(
+                  labelText: 'Marital Status / বৈবাহিক অবস্থা *',
+                  prefixIcon: Icon(Icons.favorite, color: colorController.primaryColor),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                hint: const Text('Select / নির্বাচন করুন'),
+                items: controller.maritalStatuses.map((status) {
+                  String bengaliStatus = status;
+                  if (status == 'Married') bengaliStatus = 'Married / বিবাহিত';
+                  else if (status == 'Unmarried') bengaliStatus = 'Unmarried / অবিবাহিত';
+                  else if (status == 'Divorced') bengaliStatus = 'Divorced / বিবাহবিচ্ছিন্ন';
+                  else if (status == 'Widowed') bengaliStatus = 'Widowed / বিধবা/বিধুর';
+                  else if (status == 'Separated') bengaliStatus = 'Separated / পৃথক';
+
+                  return DropdownMenuItem<String>(
+                    value: status,
+                    child: Text(
+                      bengaliStatus,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                   );
                 }).toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    controller.selectedMaritalStatus.value = value;
+                  }
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please select marital status';
+                  }
+                  return null;
+                },
               ),
             ),
           ],
@@ -325,24 +348,25 @@ class EmployeeFormScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.people_alt, color: colorController.darkColor),
-                const SizedBox(width: 8),
-                Obx(
-                  () => Text(
-                    controller.selectedMaritalStatus.value == 'Married'
-                        ? 'Spouse Information'
-                        : 'Spouse Information (Optional)',
-                    style:  TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: colorController.darkColor
+                Icon(Icons.people_alt, color: colorController.darkColor, size: 22),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Obx(
+                    () => Text(
+                      controller.selectedMaritalStatus.value == 'Married'
+                          ? 'Spouse Information / স্বামী/স্ত্রীর তথ্য'
+                          : 'Spouse Information (Optional) / স্বামী/স্ত্রীর তথ্য (ঐচ্ছিক)',
+                      style:  TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: colorController.darkColor
+                      ),
                     ),
                   ),
-
                 ),
                 const Text(
-                  ' *',
-                  style: TextStyle(color: Colors.red, fontSize: 18),
+                  '*',
+                  style: TextStyle(color: Colors.red, fontSize: 16),
                 ),
               ],
             ),
@@ -351,8 +375,8 @@ class EmployeeFormScreen extends StatelessWidget {
               () => CustomTextField(
                 controller: controller.spouseNameController,
                 labelText: controller.selectedMaritalStatus.value == 'Married'
-                    ? 'Spouse Name *'
-                    : 'Spouse Name',
+                    ? 'Spouse Name / স্বামী/স্ত্রীর নাম *'
+                    : 'Spouse Name / স্বামী/স্ত্রীর নাম',
                 prefixIcon: Icons.person_outline,
                 validator: (value) {
                   // Required only for Married status
@@ -368,8 +392,8 @@ class EmployeeFormScreen extends StatelessWidget {
               () => CustomTextField(
                 controller: controller.spouseOccupationController,
                 labelText: controller.selectedMaritalStatus.value == 'Married'
-                    ? 'Spouse Occupation *'
-                    : 'Spouse Occupation',
+                    ? 'Spouse Occupation / পেশা *'
+                    : 'Spouse Occupation / পেশা',
                 prefixIcon: Icons.work_outline,
                 validator: (value) {
                   // Required only for Married status
@@ -385,9 +409,9 @@ class EmployeeFormScreen extends StatelessWidget {
               () => CustomTextField(
                 controller: controller.spouseDobController,
                 labelText: controller.selectedMaritalStatus.value == 'Married'
-                    ? 'Spouse Date of Birth *'
-                    : 'Spouse Date of Birth',
-                hintText: 'DD/MM/YYYY',
+                    ? 'Spouse Date of Birth / জন্ম তারিখ *'
+                    : 'Spouse Date of Birth / জন্ম তারিখ',
+                hintText: 'DD/MM/YYYY / দিন/মাস/বছর',
                 prefixIcon: Icons.calendar_today,
                 readOnly: true,
                 onTap: () => _selectDate(controller.spouseDobController),
@@ -400,10 +424,50 @@ class EmployeeFormScreen extends StatelessWidget {
                 },
               ),
             ),
+            const SizedBox(height: 16),
+            Obx(
+              () => DropdownButtonFormField<String>(
+                value: controller.selectedSpouseEducation.value.isEmpty
+                    ? null
+                    : controller.selectedSpouseEducation.value,
+                decoration: InputDecoration(
+                  labelText: controller.selectedMaritalStatus.value == 'Married'
+                      ? 'Spouse Education / শিক্ষা *'
+                      : 'Spouse Education / শিক্ষা',
+                  prefixIcon: Icon(Icons.school, color: colorController.primaryColor),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                hint: const Text('Select / নির্বাচন করুন'),
+                items: controller.employeeEducationOptions.map((education) {
+                  return DropdownMenuItem<String>(
+                    value: education,
+                    child: Text(education),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    controller.selectedSpouseEducation.value = value;
+                  }
+                },
+                validator: (value) {
+                  // Required only for Married status
+                  if (controller.selectedMaritalStatus.value == 'Married') {
+                    if (value == null || value.isEmpty) {
+                      return 'Please select spouse education';
+                    }
+                  }
+                  return null;
+                },
+              ),
+            ),
             const SizedBox(height: 12),
             CustomTextField(
-              labelText: 'Number of Children *',
-              hintText: '0-99',
+              labelText: 'Number of Children / সন্তানের সংখ্যা *',
+              hintText: '0-99 / ০-৯৯',
               prefixIcon: Icons.child_care,
               keyboardType: TextInputType.number,
               maxLength: 2,
@@ -441,12 +505,14 @@ class EmployeeFormScreen extends StatelessWidget {
                         Icon(Icons.child_care_outlined,
                             color:colorController.darkColor),
                         const SizedBox(width: 8),
-                        Text(
-                          'Child ${index + 1} Information',
-                          style:  TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: colorController.darkColor
+                        Expanded(
+                          child: Text(
+                            'Child ${index + 1} Information / সন্তান ${index + 1} তথ্য',
+                            style:  TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: colorController.darkColor
+                            ),
                           ),
                         ),
                         const Text(
@@ -458,8 +524,8 @@ class EmployeeFormScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                     CustomTextField(
                       controller: controller.childrenControllers[index]['dob'],
-                      labelText: 'Date of Birth *',
-                      hintText: 'DD/MM/YYYY',
+                      labelText: 'Date of Birth / জন্ম তারিখ *',
+                      hintText: 'DD/MM/YYYY / দিন/মাস/বছর',
                       prefixIcon: Icons.calendar_today,
                       readOnly: true,
                       onTap: () => _selectDate(
@@ -467,14 +533,14 @@ class EmployeeFormScreen extends StatelessWidget {
                       validator: (value) =>
                           controller.validateRequired(value, 'Date of Birth'),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
                     Obx(
                       () => DropdownButtonFormField<String>(
                         value: controller.childrenEducations[index].isEmpty
                             ? null
                             : controller.childrenEducations[index],
                         decoration: InputDecoration(
-                          labelText: 'Education *',
+                          labelText: 'Education / শিক্ষা *',
                           prefixIcon: Icon(Icons.school, color: colorController.primaryColor),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -482,7 +548,7 @@ class EmployeeFormScreen extends StatelessWidget {
                           filled: true,
                           fillColor: Colors.white,
                         ),
-                        hint: const Text('Select education level'),
+                        hint: const Text('Select / নির্বাচন করুন'),
                         items: controller.childEducationOptions.map((education) {
                           return DropdownMenuItem<String>(
                             value: education,
@@ -503,63 +569,45 @@ class EmployeeFormScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        RichText(
-                          text: const TextSpan(
-                            text: 'Gender ',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
-                            ),
-                            children: [
-                              TextSpan(
-                                text: '*',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
+                    Obx(
+                      () => DropdownButtonFormField<String>(
+                        value: controller.childrenGenders[index].isEmpty
+                            ? null
+                            : controller.childrenGenders[index],
+                        decoration: InputDecoration(
+                          labelText: 'Gender / লিঙ্গ *',
+                          prefixIcon: Icon(Icons.person, color: colorController.primaryColor),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
+                          filled: true,
+                          fillColor: Colors.white,
                         ),
-                        const SizedBox(height: 8),
-                        Obx(
-                          () => Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: controller.genders.map((gender) {
-                              return ChoiceChip(
-                                label: Text(
-                                  gender,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                selected:
-                                    controller.childrenGenders[index] == gender,
-                                selectedColor: _getGenderColor(gender),
-                                backgroundColor: Colors.grey.shade200,
-                                checkmarkColor: Colors.white,
-                                onSelected: (selected) {
-                                  controller.updateChildGender(index, gender);
-                                },
-                                labelStyle: TextStyle(
-                                  color:
-                                      controller.childrenGenders[index] == gender
-                                          ? Colors.white
-                                          : Colors.black87,
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ],
+                        hint: const Text('Select / নির্বাচন করুন'),
+                        items: controller.genders.map((gender) {
+                          String bengaliGender = gender;
+                          if (gender == 'Male') bengaliGender = 'Male / পুরুষ';
+                          else if (gender == 'Female') bengaliGender = 'Female / মহিলা';
+                          else if (gender == 'Common') bengaliGender = 'Common / উভলিঙ্গ / সাধারণ';
+                          else if (gender == 'Transgender') bengaliGender = 'Transgender / তৃতীয় লিঙ্গ';
+
+                          return DropdownMenuItem<String>(
+                            value: gender,
+                            child: Text(bengaliGender),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          if (value != null) {
+                            controller.updateChildGender(index, value);
+                          }
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please select gender';
+                          }
+                          return null;
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -584,12 +632,14 @@ class EmployeeFormScreen extends StatelessWidget {
               children: [
                 Icon(Icons.info_outline, color: colorController.darkColor),
                 const SizedBox(width: 8),
-                Text(
-                  'Employee Details',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: colorController.darkColor
+                Expanded(
+                  child: Text(
+                    'Employee Details / কর্মচারী বিস্তারিত',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: colorController.darkColor
+                    ),
                   ),
                 ),
                 const Text(
@@ -598,88 +648,33 @@ class EmployeeFormScreen extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                RichText(
-                  text: const TextSpan(
-                    text: 'Gender ',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: '*',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Obx(
-                  () => Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: controller.genders.map((gender) {
-                      return ChoiceChip(
-                        label: Text(
-                          gender,
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        selected: controller.selectedGender.value == gender,
-                        selectedColor: _getGenderColor(gender),
-                        backgroundColor: Colors.grey.shade200,
-                        checkmarkColor: Colors.white,
-                        onSelected: (selected) {
-                          controller.selectedGender.value = gender;
-                        },
-                        labelStyle: TextStyle(
-                          color: controller.selectedGender.value == gender
-                              ? Colors.white
-                              : Colors.black87,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ],
-            ),
+
             const SizedBox(height: 16),
             CustomTextField(
               controller: controller.presentAddressController,
-              labelText: 'Present Address *',
-              hintText: 'Enter your present address',
+              labelText: 'Present Address / বর্তমান ঠিকানা *',
+              hintText: 'Enter present address / বর্তমান ঠিকানা লিখুন',
               prefixIcon: Icons.home,
               validator: (value) =>
                   controller.validateRequired(value, 'Present Address'),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             CustomTextField(
               controller: controller.permanentAddressController,
-              labelText: 'Permanent Address *',
-              hintText: 'Enter your permanent address',
+              labelText: 'Permanent Address / স্থায়ী ঠিকানা *',
+              hintText: 'Enter permanent address / স্থায়ী ঠিকানা লিখুন',
               prefixIcon: Icons.location_on,
               validator: (value) =>
                   controller.validateRequired(value, 'Permanent Address'),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             Obx(
               () => DropdownButtonFormField<String>(
                 value: controller.selectedEducation.value.isEmpty
                     ? null
                     : controller.selectedEducation.value,
                 decoration: InputDecoration(
-                  labelText: 'Education *',
+                  labelText: 'Education / শিক্ষা *',
                   prefixIcon: Icon(Icons.school, color: colorController.primaryColor),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -687,7 +682,7 @@ class EmployeeFormScreen extends StatelessWidget {
                   filled: true,
                   fillColor: Colors.white,
                 ),
-                hint: const Text('Select education level'),
+                hint: const Text('Select / নির্বাচন করুন'),
                 items: controller.employeeEducationOptions.map((education) {
                   return DropdownMenuItem<String>(
                     value: education,
@@ -702,6 +697,86 @@ class EmployeeFormScreen extends StatelessWidget {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please select education';
+                  }
+                  return null;
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+            Obx(
+                  () => DropdownButtonFormField<String>(
+                value: controller.selectedGender.value.isEmpty
+                    ? null
+                    : controller.selectedGender.value,
+                decoration: InputDecoration(
+                  labelText: 'Gender / লিঙ্গ *',
+                  prefixIcon: Icon(Icons.person, color: colorController.primaryColor),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                hint: const Text('Select / নির্বাচন করুন'),
+                items: controller.genders.map((gender) {
+                  String bengaliGender = gender;
+                  if (gender == 'Male') bengaliGender = 'Male / পুরুষ';
+                  else if (gender == 'Female') bengaliGender = 'Female / মহিলা';
+                  else if (gender == 'Common') bengaliGender = 'Common / সাধারণ';
+                  else if (gender == 'Transgender') bengaliGender = 'Transgender / হিজড়া';
+
+                  return DropdownMenuItem<String>(
+                    value: gender,
+                    child: Text(bengaliGender),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    controller.selectedGender.value = value;
+                  }
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please select gender';
+                  }
+                  return null;
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+            Obx(
+              () => DropdownButtonFormField<String>(
+                value: controller.selectedMobileUser.value.isEmpty
+                    ? null
+                    : controller.selectedMobileUser.value,
+                decoration: InputDecoration(
+                  labelText: 'Mobile User / ব্যবহারকারী *',
+                  prefixIcon: Icon(Icons.phone_android, color: colorController.primaryColor),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                hint: const Text('Select / নির্বাচন করুন'),
+                items: controller.mobileUserOptions.map((option) {
+                  String bengaliOption = option;
+                  if (option == 'Yes') bengaliOption = 'Yes / হ্যাঁ';
+                  else if (option == 'No') bengaliOption = 'No / না';
+
+                  return DropdownMenuItem<String>(
+                    value: option,
+                    child: Text(bengaliOption),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    controller.selectedMobileUser.value = value;
+                  }
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please select mobile user';
                   }
                   return null;
                 },
@@ -742,9 +817,9 @@ class EmployeeFormScreen extends StatelessWidget {
                   ),
                   SizedBox(width: 12),
                   Text(
-                    'SAVING...',
+                    'SAVING / সংরক্ষণ হচ্ছে...',
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -756,9 +831,10 @@ class EmployeeFormScreen extends StatelessWidget {
                   Icon(Icons.save, size: 24),
                   SizedBox(width: 8),
                   Text(
-                    'SAVE EMPLOYEE',
+                    'SAVE EMPLOYEE\nকর্মচারী সংরক্ষণ করুন',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -812,6 +888,7 @@ class EmployeeFormScreen extends StatelessWidget {
                   _buildInfoRow('Present Address', controller.presentAddressController.text),
                   _buildInfoRow('Permanent Address', controller.permanentAddressController.text),
                   _buildInfoRow('Education', controller.selectedEducation.value),
+                  _buildInfoRow('Mobile User', controller.selectedMobileUser.value),
                 ]),
                 if (controller.selectedMaritalStatus.value.isNotEmpty &&
                     controller.selectedMaritalStatus.value != 'Unmarried') ...[
@@ -829,6 +906,10 @@ class EmployeeFormScreen extends StatelessWidget {
                         controller.spouseDobController.text.isEmpty
                             ? 'Not provided'
                             : controller.spouseDobController.text),
+                    _buildInfoRow('Spouse Education',
+                        controller.selectedSpouseEducation.value.isEmpty
+                            ? 'Not provided'
+                            : controller.selectedSpouseEducation.value),
                     _buildInfoRow('Number of Children',
                         controller.numberOfChildren.value.toString()),
                   ]),
@@ -867,7 +948,9 @@ class EmployeeFormScreen extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Get.back(),
+            onPressed: () {
+              Navigator.of(Get.overlayContext!).pop();
+            },
             child: Text(
               'Cancel',
               style: TextStyle(
@@ -879,7 +962,7 @@ class EmployeeFormScreen extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () async {
-              Get.back();
+              Navigator.of(Get.overlayContext!).pop();
               await controller.saveEmployee();
               // Scroll to top after successful save
               if (scrollController.hasClients) {
