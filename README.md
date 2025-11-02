@@ -1,6 +1,9 @@
 # get_info
 
-A new Flutter project.
+Employee Information Management System - A Flutter web application.
+
+## Live Demo
+🌐 **https://hasib9526.github.io/get_info/**
 
 ## Getting Started
 
