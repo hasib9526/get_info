@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import '../models/employee_model.dart';
 import '../models/spouse_model.dart';
 import '../models/child_model.dart';
@@ -171,6 +172,21 @@ class EmployeeController extends GetxController {
   // Fetch employee name by ID using API
   Future<void> fetchEmployeeName(String employeeId) async {
     if (employeeId.isEmpty || selectedCompany.value.isEmpty) return;
+
+    // Check network connectivity before fetching
+    final hasNetwork = await checkNetworkConnectivity();
+    if (!hasNetwork) {
+      Get.snackbar(
+        'No Internet Connection / ইন্টারনেট সংযোগ নেই',
+        'Please turn on your internet connection to fetch employee data.\n\nকর্মচারীর তথ্য আনতে ইন্টারনেট সংযোগ চালু করুন।',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red.shade100,
+        colorText: Colors.red.shade900,
+        icon: Icon(Icons.wifi_off, color: Colors.red.shade700),
+        duration: const Duration(seconds: 4),
+      );
+      return;
+    }
 
     try {
       // Get factory code from selected company
@@ -454,8 +470,90 @@ class EmployeeController extends GetxController {
     return false;
   }
 
+  // Check network connectivity
+  Future<bool> checkNetworkConnectivity() async {
+    try {
+      final List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
+
+      // Check if device has any network connection
+      if (connectivityResult.contains(ConnectivityResult.none)) {
+        return false;
+      }
+
+      return true;
+    } catch (e) {
+      print('Error checking connectivity: $e');
+      return false;
+    }
+  }
+
   Future<void> saveEmployee() async {
     if (!validateForm()) return;
+
+    // Check network connectivity before proceeding
+    final hasNetwork = await checkNetworkConnectivity();
+    if (!hasNetwork) {
+      Get.dialog(
+        AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              Icon(Icons.wifi_off, color: Colors.red.shade700, size: 28),
+              const SizedBox(width: 12),
+              const Text(
+                'No Internet Connection\nইন্টারনেট সংযোগ নেই',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+              ),
+            ],
+          ),
+          content: const Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Please check your internet connection and try again.\n\nঅনুগ্রহ করে আপনার ইন্টারনেট সংযোগ পরীক্ষা করুন এবং আবার চেষ্টা করুন।',
+                style: TextStyle(fontSize: 14),
+              ),
+              SizedBox(height: 12),
+              Text(
+                'Data cannot be saved without an internet connection.\n\nইন্টারনেট সংযোগ ছাড়া ডেটা সংরক্ষণ করা যাবে না।',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(Get.overlayContext!).pop();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colorController.primaryColor,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              ),
+              child: const Text(
+                'OK',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        barrierDismissible: false,
+      );
+      return; // Exit without saving
+    }
 
     // Start loading
     isLoading.value = true;

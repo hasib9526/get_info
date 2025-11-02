@@ -722,8 +722,8 @@ class EmployeeFormScreen extends StatelessWidget {
                   String bengaliGender = gender;
                   if (gender == 'Male') bengaliGender = 'Male / পুরুষ';
                   else if (gender == 'Female') bengaliGender = 'Female / মহিলা';
-                  else if (gender == 'Common') bengaliGender = 'Common / সাধারণ';
-                  else if (gender == 'Transgender') bengaliGender = 'Transgender / হিজড়া';
+                  else if (gender == 'Common') bengaliGender = 'Common / উভলিঙ্গ/সাধারণ';
+                  else if (gender == 'Transgender') bengaliGender = 'Transgender / তৃতীয় লিঙ্গ';
 
                   return DropdownMenuItem<String>(
                     value: gender,
