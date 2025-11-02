@@ -1,23 +1,6 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
-
 class ApiConfig {
   // Base URL
-  // Original API (for mobile/local development)
-  static const String _originalBaseUrl = 'http://apps.bitopibd.com:8090/bimobapiv2/api';
-
-  // CORS Proxy for web deployment (temporary solution)
-  // WARNING: Only use for testing! Not secure for production!
-  static const String _corsProxyUrl = 'https://corsproxy.io/?';
-
-  // Determine which URL to use based on platform
-  static String get baseUrl {
-    // For web builds, use CORS proxy (temporary fix)
-    // For mobile/desktop, use original URL
-    if (kIsWeb) {
-      return '$_corsProxyUrl$_originalBaseUrl';
-    }
-    return _originalBaseUrl;
-  }
+  static const String baseUrl = 'http://apps.bitopibd.com:8090/bimobapiv2/api';
 
   // Authentication Endpoints
   static const String loginEndpoint = '/Account/GetUserInfo';
